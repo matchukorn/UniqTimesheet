@@ -1,9 +1,9 @@
-html,
-body {
+@import url('https://fonts.googleapis.com/css2?family=Niramit:wght@200&family=Prompt:wght@300&family=Sarabun:wght@300&display=swap');
+
+html {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  /* background-color: green; */
 }
 
 a {
@@ -13,14 +13,87 @@ a {
 
 * {
   box-sizing: border-box;
+  font-family: 'Prompt', sans-serif;
+}
+.col-sm-12{
+  width: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
+
+
+
+
+
+*{
+  margin: 0;
+  padding: 0;
 }
+.clear{
+  clear: both;
+}
+.slide-toggle{
+  display: none;
+}
+.slidemenu{
+  font-family: arial, sans-serif;
+  max-width: 100%;
+  margin: 13px auto;
+  overflow: hidden;
+}
+.slidemenu label{
+  width: 50%;
+  text-align: center;
+  display: block;
+  float: left;
+  color: rgb(111, 109, 109);
+  opacity: 0.2;
+
+}
+.slidemenu label:hover{
+  cursor: pointer;
+  color: rgb(165, 158, 158);
+}
+.slidemenu label span{
+  display: block;
+  padding: 5px;    
+}
+.slidemenu label .icon{
+  font-size: 20px;
+  border: solid 2px rgb(33, 171, 245);
+  text-align: center;
+  height: 10px;
+  width: 50%;
+  display: block;
+  margin: 0 auto;
+  line-height: 50px;
+  border-radius: 50%;
+}
+/*Bar Style*/
+.slider{
+  width: 100%;
+  height: 5px;
+  display: block;
+  background: rgb(165, 158, 158);
+  margin-top: 10px;
+  border-radius: 5px;
+}
+.slider .bar{
+  width: 50%;
+  height: 5px;
+  background: rgb(33, 171, 245);
+  border-radius: 5px;
+}
+/*Animations*/
+.slidemenu label, .slider .bar {
+  transition: all 200ms ease-in-out;
+  -webkit-transition: all 200ms ease-in-out;
+  -moz-transition: all 200ms ease-in-out;
+}
+/*Toggle*/
+.slidemenu .slide-toggle:checked + label{
+  opacity: 1;
+}
+.slidemenu #slide-item-1:checked ~ .slider .bar{ margin-left: 0; }
+.slidemenu #slide-item-2:checked ~ .slider .bar{ margin-left: 50%; }
+
+

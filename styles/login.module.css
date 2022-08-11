@@ -1,0 +1,7 @@
+.row {
+  display: flex;
+  flex: 1 0 100%;
+  flex-wrap: wrap;
+  margin-right: 0px;
+  margin-left: 0px;
+}

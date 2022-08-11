@@ -1,0 +1,113 @@
+.row {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.boxmenu:hover {
+  background-color: #8c1e21;
+  color: white;
+  cursor: pointer;
+  border: 5px solid white;
+}
+.boxmenu{
+  background-color: beige;
+}
+
+@media only screen and (min-width: 960px) {
+    .bantopl{
+      width: 85%;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .bantopr{
+      padding-top: 10px;
+      text-align: right;
+    }
+}
+@media only screen and (min-width: 1440px) {
+  .bantopl{
+    width: 85%;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .bantopr{
+    padding-top: 10px;
+    text-align: right;
+  }
+}
+@media only screen and (min-width: 2000px) {
+  .bantopl{
+    width: 85%;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .bantopr{
+    /* padding-top: 10px; */
+    text-align: right;
+  }
+}
+@media only screen and (max-device-width: 480px) {
+  .bantopl{
+    width: 100%;
+    text-align: center;
+    padding-top: 20px;
+  }
+  .bantopr{
+    padding-top: 10px;
+    text-align: center;
+    width: 100%;
+    padding-bottom: 10px;
+  }
+  .logout {
+    text-align: center;
+  }
+  .titleheader{
+    display: none;
+  }
+}
+@media only screen and (device-width: 768px) {
+  .bantopl{
+    width: 100%;
+    text-align: center;
+    padding-top: 20px;
+  }
+  .bantopr{
+    padding-top: 10px;
+    text-align: center;
+    width: 100%;
+    padding-bottom: 10px;
+  }
+  .logout {
+    text-align: center;
+  }
+  .titleheader{
+    display: none;
+  }
+}
+/* different techniques for iPad screening */
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+  .bantopl{
+    width: 85%;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .bantopr{
+    padding-top: 10px;
+    text-align: right;
+    width: 100%;
+  }
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+  .bantopl{
+    width: 85%;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .bantopr{
+    padding-top: 10px;
+    text-align: right;
+  }
+}
