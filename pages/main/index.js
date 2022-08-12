@@ -15,24 +15,24 @@ export default class Main extends Component {
     componentDidMount() {
         this.setState({
             listmenu: [
-                {
-                    id: '1',
-                    title: 'BI REPORT',
-                    linkx: '/bi',
-                    iconx: ''
-                },
+                // {
+                //     id: '1',
+                //     title: 'BI REPORT',
+                //     linkx: '/bi',
+                //     iconx: ''
+                // },
                 {
                     id: '2',
                     title: 'TIMESHEET',
                     linkx: '/timesheet',
                     iconx: ''
                 },
-                {
-                    id: '3',
-                    title: 'SETTING',
-                    linkx: '/setting',
-                    iconx: ''
-                },
+                // {
+                //     id: '3',
+                //     title: 'SETTING',
+                //     linkx: '/setting',
+                //     iconx: ''
+                // },
             ]
         })
     }
