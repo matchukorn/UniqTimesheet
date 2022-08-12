@@ -143,7 +143,22 @@ export default class Service{
         }
         return data;
     }
-
+    listmasteremployee = async (token) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "listmasteremployee");
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
 
 
 }

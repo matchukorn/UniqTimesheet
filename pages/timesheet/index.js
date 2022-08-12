@@ -27,6 +27,8 @@ export default class BI extends Component {
             keyitememp: '',
             keyempname: '',
             keyempcode: '',
+            optionempname: [],
+            popupcreateemployee: false,
             EmployeeCode: '',
             EmployeeDisplayName: '',
             EmplolyeeTypeCode: '',
@@ -70,17 +72,12 @@ export default class BI extends Component {
         }
     }
     componentDidMount() {
-        this.getuserinfo();
-        this.setState({
-            listmenu: [
-                {
-                    id: '1',
-                    title: 'TIME SHEET REPORT',
-                    linkx: '#',
-                    iconx: ''
-                },
-            ]
-        })
+        if(getCookie('token')){
+            this.getuserinfo();
+            this.listmasteremployee();
+        }else{
+            window.location.href = "/"
+        }
     }
     gettoken = async (emp_code) => {
         await new Service().gettoken(emp_code).then(res => {
@@ -147,6 +144,13 @@ export default class BI extends Component {
             });
         });
     }
+    listmasteremployee = async () => {
+        await new Service().listmasteremployee(getCookie('token')).then(res => {
+            this.setState({
+                optionempname: res.data,
+            });
+        });
+    }
 
     changeProjectname = (e) => {
         this.setState({
@@ -201,6 +205,12 @@ export default class BI extends Component {
         });
         this.masterjobid(this.state.txt_projectnamevalue.value, this.state.txt_activitycode, this.state.activitycode, this.state.txt_zonevalue.value, e.code);
     }
+    changeempname = (e) => {
+        this.setState({
+            pop_empcode: e,
+            pop_fullname: e.name,
+        });
+    }
     showpopupinput = (e, index, empcode, empname) => {
         let { item_employee } = this.state;
         try {
@@ -228,6 +238,19 @@ export default class BI extends Component {
             pop_progressunit: ''
         })
     }
+    showpopupcreateemployee = (value) => {
+        this.setState({ 
+            popupcreateemployee: value,
+            pop_empcode: '',
+            pop_fullname: '',
+            pop_befstart: '',
+            pop_befend: '',
+            pop_aftstart: '',
+            pop_aftend: '',
+            pop_otstart: '',
+            pop_otend: '',
+        });
+    }
 
     // changvalue
     confrimchangtime = (index) => {
@@ -252,6 +275,66 @@ export default class BI extends Component {
         itemprogress.push(arr);
         this.setState({ itemprogress })
         this.showpopupprogress(false);
+    }
+    createEmployee = () => {
+        let { item_employee } = this.state;
+        if(this.state.pop_empcode && this.state.pop_fullname){
+            let arr = {
+                empcode: this.state.pop_empcode.value,
+                empname: this.state.pop_fullname,
+                befstart: this.state.pop_befstart,
+                befend: this.state.pop_befend,
+                atfstart: this.state.pop_aftstart,
+                atfend: this.state.pop_aftend,
+                otstart: this.state.pop_otstart,
+                otend: this.state.pop_otend,
+                useredit: '1',
+            }
+            item_employee.push(arr);
+            this.setState({ item_employee });
+            this.showpopupcreateemployee(false);
+        }
+        
+    }
+    removeEmployee = (key) => {
+        let { item_employee } = this.state;
+        Swal.fire({
+            title: 'คุณต้องการลบรายชื่อนี้ออกหรือไม่ ?',
+            text: "",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก',
+          }).then((result) => {
+            if (result.isConfirmed) {
+                item_employee.splice(key, 1)
+                this.setState({ item_employee });
+            }
+          })
+    }
+    applyAll = () => {
+        let { item_employee } = this.state;
+        try {
+            if(item_employee[0].befstart && item_employee[0].befend){
+                for(let x=0;x<item_employee.length;x++) {
+                    if(item_employee[x].useredit==='0'){
+                        item_employee[x].befstart = this.state.pop_befstart;
+                        item_employee[x].befend = this.state.pop_befend;
+                        item_employee[x].atfstart = this.state.pop_aftstart;
+                        item_employee[x].atfend = this.state.pop_aftend;
+                        item_employee[x].otstart = this.state.pop_otstart;
+                        item_employee[x].otend = this.state.pop_otend;
+                    }else{
+                    }
+                }
+                this.setState({item_employee});
+            }else{
+            }
+        } catch (error) {
+            
+        }
     }
 
     btn_confrim = () => {
@@ -393,6 +476,80 @@ export default class BI extends Component {
 
                         </div>
                     </Modal>
+                    {/* Item Employee */}
+                    <Modal
+                        show={this.state.popupcreateemployee}
+                        backdrop="static"
+                        keyboard={false}
+                        StrictMode={true}
+                        aria-labelledby="contained-modal-title-vcenter"
+                        centered
+                    >
+                        <Modal.Header>
+                            <div>กำหนดเวลาทำงาน</div>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <div className={styles.row} style={{ fontSize: 15 }}>
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>พนักงาน</label>
+                                        <Select
+                                            options={this.state.optionempname}
+                                            value={this.state.pop_empcode}
+                                            onChange={(e) => this.changeempname(e)}
+                                            styles={stylesselect}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">ช่วงแรก</div>
+                                    <div style={{ width: '50%', float: 'left' }}>
+                                        <label>เริ่มงาน</label>
+                                        <input type="text" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
+                                    </div>
+                                    <div style={{ width: '50%', float: 'right' }}>
+                                        <label>ออกงาน</label>
+                                        <input type="text" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">ช่วงหลัง</div>
+                                    <div style={{ width: '50%', float: 'left' }}>
+                                        <label>เริ่มงาน</label>
+                                        <input type="text" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
+                                    </div>
+                                    <div style={{ width: '50%', float: 'right' }}>
+                                        <label>ออกงาน</label>
+                                        <input type="text" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div className={styles.row}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">OT</div>
+                                    <div style={{ width: '50%', float: 'left' }}>
+                                        <label>เริ่มงาน</label>
+                                        <input type="text" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
+                                    </div>
+                                    <div style={{ width: '50%', float: 'right' }}>
+                                        <label>ออกงาน</label>
+                                        <input type="text" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
+                                    </div>
+                                </div>
+                            </div>
+                        </Modal.Body>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: '0.75rem', borderTop: '1px solid #dee2e6', borderBottomRightRadius: 'calc(0.3rem - 1px)', borderBottomLeftRadius: 'calc(0.3rem - 1px)' }}>
+                            <div className={styles.row} style={{ width: '100%' }}>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                                <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
+                                    <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
+                                </div>
+                                <div className="col-sm-12 col-md-4 col-lg-4">
+                                    <button variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.showpopupcreateemployee(false)}>ยกเลิก</button>
+                                </div>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                            </div>
+
+                        </div>
+                    </Modal>
                     {/* End */}
 
                     <div className={styles.row} style={{ textAlign: 'center' }}>
@@ -466,10 +623,19 @@ export default class BI extends Component {
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <div style={{ width: '50%', float: 'left' }}><span style={{ fontWeight: 'bold' }}>ข้อมูลพนักงานรายวัน</span></div>
                                         <div style={{ width: '50%', float: 'right', textAlign: 'right' }}>
-                                            {/* <i className="fa-solid fa-circle-plus" style={{ fontSize: 30, color: 'gray' }} onClick={() => this.showpopupinput(true)}></i> */}
+                                            {
+                                                this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
+                                                    this.state.item_employee ?
+                                                        <i className="fa-solid fa-square-check" onClick={() => this.applyAll()} style={{ fontSize: 28, marginRight: 20, cursor: 'pointer', color: 'gray'}}></i> : <></>
+                                                    : <></>
+                                            }
+                                            {
+                                                this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
+                                                    <i className="fa-solid fa-circle-plus" style={{ fontSize: 30, color: 'gray', cursor: 'pointer' }} onClick={() => this.showpopupcreateemployee(true)}></i> : <></>
+                                            }
                                         </div>
                                     </div>
-                                    <table className="table" style={{ fontSize: 12, lineHeight: 1 }}>
+                                    <table className="table" style={{ fontSize: 12, lineHeight: 1, width: '100%' }}>
                                         <thead>
                                             <tr>
                                                 <th>รหัส</th>
@@ -486,28 +652,25 @@ export default class BI extends Component {
                                                                 <>
                                                                     <tr key={index} style={{ borderBottomStyle: 'hidden' }}>
                                                                         <td>{item.empcode}</td>
-                                                                        <td colSpan={5}><span onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span></td>
+                                                                        <td colSpan={5}>
+                                                                            <span style={{fontSize: 18}} onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span>
+                                                                            <div className={styles.row}>
+                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{paddingRight: 7}}>
+                                                                                    <div>ช่วงแรก</div>
+                                                                                    <div>{item.befstart}-{item.befend}</div>
+                                                                                </div>
+                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{paddingRight: 7}}>
+                                                                                    <div>ช่วงหลัง</div>
+                                                                                    <div>{item.atfstart}-{item.atfend}</div>
+                                                                                </div>
+                                                                                <div className="col-lg-4 col-md-4 col-sm-4">
+                                                                                    <div>OT</div>
+                                                                                    <div>{item.otstart}-{item.otend}</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
                                                                         <td>
-                                                                            {
-                                                                                index === 0 ?
-                                                                                    <i className="fa-solid fa-square-check" style={{ fontSize: 20 }}></i>
-                                                                                    : <></>
-                                                                            }
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td></td>
-                                                                        <td style={{ textAlign: 'center' }}>
-                                                                            <div>ช่วงแรก</div>
-                                                                            <div>{item.befstart}-{item.befend}</div>
-                                                                        </td>
-                                                                        <td style={{ textAlign: 'center' }}>
-                                                                            <div>ช่วงหลัง</div>
-                                                                            <div>{item.atfstart}-{item.atfend}</div>
-                                                                        </td>
-                                                                        <td style={{ textAlign: 'center' }}>
-                                                                            <div>OT</div>
-                                                                            <div>{item.otstart}-{item.otend}</div>
+                                                                            <i className="fa-solid fa-trash" style={{fontSize: 20, color: 'red', cursor: 'pointer'}} onClick={() => this.removeEmployee(index)}></i>
                                                                         </td>
                                                                     </tr>
                                                                 </>
@@ -525,8 +688,8 @@ export default class BI extends Component {
                                 </div>
                                 <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
                                     <div className="col-lg-4 col-md-4 col-sm-4"></div>
-                                    <div className="col-lg-4 col-md-4 col-sm-4" style={{ marginBottom: 10, }}>
-                                        <button type="button" className="btn btn-outline-success">ถัดไป</button>
+                                    <div className="col-lg-4 col-md-4 col-sm-12" style={{ marginBottom: 10, }}>
+                                        <button type="button" className="btn btn-outline-success" style={{ width: '100%' }}>ถัดไป</button>
                                     </div>
                                     <div className="col-lg-4 col-md-4 col-sm-4"></div>
                                 </div>
@@ -592,8 +755,6 @@ export default class BI extends Component {
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                         <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginBottom: 10, }}>
                                             <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.btn_confrim()}>ส่งข้อมูล</button>
-                                        </div>
-                                        <div className="col-lg-3 col-md-3 col-sm-12">
                                         </div>
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                     </div>
