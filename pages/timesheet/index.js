@@ -52,7 +52,6 @@ export default class BI extends Component {
             txt_locationlabel: '',
             txt_goal: '',
             txt_actual: '',
-            itememployee: [],
             pop_empcode: '',
             pop_fullname: '',
             pop_befstart: '',
@@ -288,7 +287,7 @@ export default class BI extends Component {
                 atfend: this.state.pop_aftend,
                 otstart: this.state.pop_otstart,
                 otend: this.state.pop_otend,
-                useredit: '1',
+                useredit: '0',
             }
             item_employee.push(arr);
             this.setState({ item_employee });
@@ -348,11 +347,30 @@ export default class BI extends Component {
             confirmButtonText: 'ยอมรับ'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire(
-                    'Deleted!',
-                    'Your file has been deleted.',
-                    'success'
+                //////////
+                console.log(
+                    this.state.EmployeeCode,
+                    this.state.EmployeeDisplayName,
+                    this.state.EmplolyeeTypeCode,
+                    this.state.txt_date,
+                    this.state.txt_projectnamevalue,
+                    this.state.txt_projectlabel,
+                    this.state.txt_zonevalue,
+                    this.state.txt_zonelabel,
+                    this.state.txt_activityvalue,
+                    this.state.txt_activitycode,
+                    this.state.txt_activitylabel,
+                    this.state.txt_locationvalue,
+                    this.state.txt_locationlabel,
+                    this.state.txt_goal,
+                    this.state.txt_actual,
+                    this.state.itemprogress,
+                    this.state.item_employee,
+                    this.state.jobtargetvalue,
+                    this.state.jobtargetlabel,
+                    this.state.activitycode,
                 )
+                ////////
             }
         })
     }
