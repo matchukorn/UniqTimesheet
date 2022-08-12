@@ -18,6 +18,11 @@ export default class Login extends Component {
   }
   componentDidMount() {
     this.setState({ s_heigth: window.innerHeight });
+    if (getCookie('token')) {
+      window.location.href = "/timesheet"
+    } else {
+      
+    }
   }
 
   submitLogin = (event) => {

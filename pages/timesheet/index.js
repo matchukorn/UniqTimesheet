@@ -401,33 +401,33 @@ export default class BI extends Component {
                                     <div className="col-lg-12 col-md-12 col-sm-12">ช่วงแรก</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
+                                        <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
+                                        <input type="time" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">ช่วงหลัง</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
+                                        <input type="time" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
+                                        <input type="time" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">OT</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
+                                        <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
+                                        <input type="time" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
                                     </div>
                                 </div>
                             </div>
@@ -523,33 +523,33 @@ export default class BI extends Component {
                                     <div className="col-lg-12 col-md-12 col-sm-12">ช่วงแรก</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
+                                        <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
+                                        <input type="time" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">ช่วงหลัง</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
+                                        <input type="time" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
+                                        <input type="time" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">OT</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
+                                        <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
+                                        <input type="time" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
                                     </div>
                                 </div>
                             </div>

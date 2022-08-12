@@ -36,7 +36,7 @@ export default class BI extends Component {
                         <div>Unique Engineering and Construction</div>
                     </div>
                     <div className='col-lg-12 col-md-12 col-sm-12' role="alert" style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
-                        <div class="alert alert-dark" role="alert">
+                        <div className="alert alert-dark" role="alert">
                             <Link href='/main'>หน้าแรก</Link>
                         </div>
                     </div>
