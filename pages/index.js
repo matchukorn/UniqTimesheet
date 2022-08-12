@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styles from '../styles/login.module.css';
-import logo from '../public/logo.png';
+import logo from '../public/logouniq.png';
 import Image from 'next/image';
 import { getCookie, setCookies } from 'cookies-next';
 import Swal from 'sweetalert2'
@@ -74,7 +74,6 @@ export default class Login extends Component {
                       </div>
                       <div className="col-lg-12 col-md-12 col-sm-12"><br /></div>
                       <div className="col-lg-6 col-md-6 col-sm-12" style={{ textAlign: 'left', fontSize: 25 }}>Sign In</div>
-                      <div className="col-lg-6 col-md-6 col-sm-12" style={{ textAlign: 'right' }}><i className="fa-solid fa-circle-exclamation" style={{ fontSize: 25 }}></i></div>
                       <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 15 }}>
                         <input type="text" className="form-control" name="username" ref={this.username} placeholder="รหัสพนักงาน" autoFocus={true} />
                       </div>
