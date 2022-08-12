@@ -194,6 +194,7 @@ export default class BI extends Component {
         item_employee[index].atfend = this.state.pop_aftend;
         item_employee[index].otstart = this.state.pop_otstart;
         item_employee[index].otend = this.state.pop_otend;
+        item_employee[index].useredit = '1';
         this.setState({item_employee});
         this.showpopupinput(false, index, '', '');
     }
@@ -397,6 +398,7 @@ export default class BI extends Component {
                                         <tbody>
                                             {/* // */}
                                             {
+                                                this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
                                                 this.state.item_employee ?
                                                     this.state.item_employee.map((item, index) => {
                                                         return (
@@ -434,6 +436,7 @@ export default class BI extends Component {
                                                     <tr>
                                                         <td colSpan={7} style={{textAlign: 'center'}}>ไม่พบรายชื่อ</td>
                                                     </tr>
+                                                    :<></>
                                             }
                                             {/* // */}
                                         </tbody>
