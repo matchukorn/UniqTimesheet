@@ -6,6 +6,7 @@ import { Modal } from 'react-bootstrap-v5';
 import Service from '../api/Service';
 import { getCookie, setCookies } from 'cookies-next';
 import Select from 'react-select';
+import Swal from 'sweetalert2';
 
 const stylesselect = {
     control: base => ({
@@ -33,6 +34,7 @@ export default class BI extends Component {
             popupprogress: false,
             tabindex: '1',
             txt_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate())).slice(-2),
+            min_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate()-1)).slice(-2),
             optionprojectname: [],
             txt_projectnamevalue: '',
             txt_projectlabel: '',
@@ -131,6 +133,7 @@ export default class BI extends Component {
             this.setState({
                 item_employee: res.data,
             });
+            // console.log(ProjectActivity+' / '+ProjectSubActivityCode);
         });
     }
 
@@ -161,6 +164,7 @@ export default class BI extends Component {
             txt_locationvalue: e,
             txt_locationlabel: e.label
         });
+        console.log(JSON.stringify(e))
     }
     showpopupinput = (e, index, empcode, empname) => {
         let { item_employee } = this.state;
@@ -197,6 +201,26 @@ export default class BI extends Component {
         item_employee[index].useredit = '1';
         this.setState({item_employee});
         this.showpopupinput(false, index, '', '');
+    }
+
+    btn_confrim = () => {
+        Swal.fire({
+            title: 'การรายงานเท็จถือเป็นความผิดวินัยอย่างร้ายแรง และมีบทลงโทษสูงสุดตามกฎระเบียบของบริษัท',
+            text: "",
+            icon: 'warning',
+            showCloseButton: true,
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'ยอมรับ'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success'
+                )
+            }
+        })
     }
 
     render() {
@@ -342,7 +366,7 @@ export default class BI extends Component {
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12">
                                         <label>Date</label>
-                                        <input type="date" value={this.state.txt_date} onChange={(e) => this.setState({txt_date: e.target.value})} className="form-control" style={{ width: '97%', fontSize: 13}} />
+                                        <input type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({txt_date: e.target.value})} className="form-control" style={{ width: '97%', fontSize: 13}} />
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12" style={{marginTop: 5}}>
                                         <label>Project Name</label>
@@ -442,6 +466,13 @@ export default class BI extends Component {
                                         </tbody>
                                     </table>
                                 </div>
+                                <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
+                                    <div className="col-lg-4 col-md-4 col-sm-4"></div>
+                                    <div className="col-lg-4 col-md-4 col-sm-4" style={{ marginBottom: 10, }}>
+                                        <button type="button" className="btn btn-outline-success">ถัดไป</button>
+                                    </div>
+                                    <div className="col-lg-4 col-md-4 col-sm-4"></div>
+                                </div>
                             </>
                             :
                         this.state.tabindex === '2' ?
@@ -471,8 +502,8 @@ export default class BI extends Component {
                                             <tr>
                                                 <th>ลำดับ</th>
                                                 <th colSpan={3}>รายละเอียด</th>
-                                                <th>หน่วย</th>
                                                 <th>ปริมาณ</th>
+                                                <th>หน่วย</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -480,8 +511,8 @@ export default class BI extends Component {
                                             <tr style={{ borderBottomStyle: 'hidden' }}>
                                                 <td>1</td>
                                                 <td colSpan={3}>KYAW LIN AUNG รายละเอียดงาน กกกกก</td>
-                                                <td>mete</td>
                                                 <td>200</td>
+                                                <td>mete</td>
                                             </tr>
                                             
                                             {/* // */}
@@ -492,10 +523,9 @@ export default class BI extends Component {
                                     <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                         <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginBottom: 10, }}>
-                                            <button type="button" className="btn btn-outline-success" style={{ width: '100%' }}>SAVE</button>
+                                            <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.btn_confrim()}>ส่งข้อมูล</button>
                                         </div>
                                         <div className="col-lg-3 col-md-3 col-sm-12">
-                                            <button type="button" className="btn btn-outline-danger" style={{ width: '100%' }}>RESET</button>
                                         </div>
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                     </div>
