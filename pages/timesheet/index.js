@@ -34,7 +34,7 @@ export default class BI extends Component {
             popupprogress: false,
             tabindex: '1',
             txt_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate())).slice(-2),
-            min_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate()-1)).slice(-2),
+            min_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate() - 1)).slice(-2),
             optionprojectname: [],
             txt_projectnamevalue: '',
             txt_projectlabel: '',
@@ -43,6 +43,7 @@ export default class BI extends Component {
             txt_zonelabel: '',
             optionactivity: [],
             txt_activityvalue: '',
+            txt_activitycode: '',
             txt_activitylabel: '',
             optionlocation: [],
             txt_locationvalue: '',
@@ -63,7 +64,9 @@ export default class BI extends Component {
             pop_progressunit: '',
             pop_progressvolumn: '',
             item_employee: [],
-
+            jobtargetvalue: '',
+            jobtargetlabel: '',
+            activitycode: '',
         }
     }
     componentDidMount() {
@@ -94,14 +97,14 @@ export default class BI extends Component {
             this.projectmaster(res.data.EmployeeCode);
         });
     }
-    projectmaster = async() => {
+    projectmaster = async () => {
         await new Service().projectmaster(getCookie('token')).then(res => {
             this.setState({
                 optionprojectname: res.data,
             });
         });
     }
-    zonename = async(parject_code) => {
+    zonename = async (parject_code) => {
         await new Service().zonename(getCookie('token'), parject_code).then(res => {
             this.setState({
                 optionzone: res.data,
@@ -110,12 +113,13 @@ export default class BI extends Component {
             });
         });
     }
-    projectactivity = async(parject_code) => {
+    projectactivity = async (parject_code) => {
         await new Service().projectactivity(getCookie('token'), parject_code).then(res => {
             this.setState({
                 optionactivity: res.data,
                 txt_activityvalue: '',
-                txt_activitylabel: ''
+                txt_activitycode: '',
+                txt_activitylabel: '',
             });
         });
     }
@@ -128,19 +132,36 @@ export default class BI extends Component {
             });
         });
     }
-    employeesubactivity = async(ProjectActivity, ProjectSubActivityCode) => {
+    employeesubactivity = async (ProjectActivity, ProjectSubActivityCode) => {
         await new Service().employeesubactivity(getCookie('token'), ProjectActivity, ProjectSubActivityCode, this.state.EmployeeCode, 'D').then(res => {
             this.setState({
                 item_employee: res.data,
             });
-            // console.log(ProjectActivity+' / '+ProjectSubActivityCode);
+        });
+    }
+    masterjobid = async (ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode) => {
+        await new Service().masterjobid(getCookie('token'), ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode).then(res => {
+            this.setState({
+                jobtargetvalue: res.data.JobTarget,
+                jobtargetlabel: res.data.JobUnit,
+            });
         });
     }
 
     changeProjectname = (e) => {
         this.setState({
             txt_projectnamevalue: e,
-            txt_projectlabel: e.label
+            txt_projectlabel: e.label,
+            txt_zonevalue: '',
+            txt_zonelabel: '',
+            txt_activityvalue: '',
+            txt_activitycode: '',
+            txt_activitylabel: '',
+            activitycode: '',
+            txt_locationvalue: '',
+            txt_locationlabel: '',
+            jobtargetvalue: '',
+            jobtargetlabel: '',
         });
         this.zonename(e.value);
         this.projectactivity(e.value);
@@ -148,29 +169,43 @@ export default class BI extends Component {
     changeZone = (e) => {
         this.setState({
             txt_zonevalue: e,
-            txt_zonelabel: e.label
+            txt_zonelabel: e.label,
+            txt_activityvalue: '',
+            txt_activitycode: '',
+            txt_activitylabel: '',
+            activitycode: '',
+            txt_locationvalue: '',
+            txt_locationlabel: '',
+            jobtargetvalue: '',
+            jobtargetlabel: '',
         });
         this.projectsublocation(this.state.txt_projectnamevalue.value, e.value);
     }
     changeActivity = (e) => {
         this.setState({
             txt_activityvalue: e,
-            txt_activitylabel: e.label
+            txt_activitycode: e.acode,
+            txt_activitylabel: e.label,
+            activitycode: e.code,
+            txt_locationvalue: '',
+            txt_locationlabel: '',
+            jobtargetvalue: '',
+            jobtargetlabel: '',
         });
-        this.employeesubactivity(e.value,e.code);
+        this.employeesubactivity(e.acode, e.code);
     }
     changeLocation = (e) => {
         this.setState({
             txt_locationvalue: e,
             txt_locationlabel: e.label
         });
-        console.log(JSON.stringify(e))
+        this.masterjobid(this.state.txt_projectnamevalue.value, this.state.txt_activitycode, this.state.activitycode, this.state.txt_zonevalue.value, e.code);
     }
     showpopupinput = (e, index, empcode, empname) => {
         let { item_employee } = this.state;
-        try{
-            this.setState({ 
-                popupinput: e, 
+        try {
+            this.setState({
+                popupinput: e,
                 keyitememp: index,
                 keyempname: empname,
                 keyempcode: empcode,
@@ -181,12 +216,17 @@ export default class BI extends Component {
                 pop_otstart: item_employee[index].otstart,
                 pop_otend: item_employee[index].otend,
             });
-        }catch(e){
+        } catch (e) {
 
         }
     }
     showpopupprogress = (e) => {
-        this.setState({ popupprogress: e })
+        this.setState({
+            popupprogress: e,
+            pop_progressdetail: '',
+            pop_progressvolumn: '',
+            pop_progressunit: ''
+        })
     }
 
     // changvalue
@@ -199,8 +239,19 @@ export default class BI extends Component {
         item_employee[index].otstart = this.state.pop_otstart;
         item_employee[index].otend = this.state.pop_otend;
         item_employee[index].useredit = '1';
-        this.setState({item_employee});
+        this.setState({ item_employee });
         this.showpopupinput(false, index, '', '');
+    }
+    createItemprogress = () => {
+        let { itemprogress } = this.state;
+        let arr = {
+            detail: this.state.pop_progressdetail,
+            volumn: this.state.pop_progressvolumn,
+            unit: this.state.pop_progressunit,
+        }
+        itemprogress.push(arr);
+        this.setState({ itemprogress })
+        this.showpopupprogress(false);
     }
 
     btn_confrim = () => {
@@ -241,41 +292,41 @@ export default class BI extends Component {
                     >
                         <Modal.Header>
                             <div>กำหนดเวลาทำงาน</div>
-                            <div style={{fontSize: 10}}>{this.state.keyempname}</div>
+                            <div style={{ fontSize: 10 }}>{this.state.keyempname}</div>
                         </Modal.Header>
                         <Modal.Body>
-                            <div className={styles.row} style={{fontSize: 15}}>
+                            <div className={styles.row} style={{ fontSize: 15 }}>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">ช่วงแรก</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='09:00' className="form-control" style={{width: '97%'}} value={this.state.pop_befstart} onChange={(e) => this.setState({pop_befstart: e.target.value})}/>
+                                        <input type="text" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({pop_befend: e.target.value})}/>
+                                        <input type="text" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">ช่วงหลัง</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='13:00' className="form-control" style={{width: '97%'}} value={this.state.pop_aftstart} onChange={(e) => this.setState({pop_aftstart: e.target.value})}/>
+                                        <input type="text" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({pop_aftend: e.target.value})}/>
+                                        <input type="text" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">OT</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
-                                        <input type="text" placeholder='20:00' className="form-control" style={{width: '97%'}} value={this.state.pop_otstart} onChange={(e) => this.setState({pop_otstart: e.target.value})}/>
+                                        <input type="text" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
                                         <label>ออกงาน</label>
-                                        <input type="text" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({pop_otend: e.target.value})}/>
+                                        <input type="text" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
                                     </div>
                                 </div>
                             </div>
@@ -307,18 +358,18 @@ export default class BI extends Component {
                             <Modal.Title>เพิ่มรายละเอียดงาน</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <div className={styles.row} style={{fontSize: 15}}>
+                            <div className={styles.row} style={{ fontSize: 15 }}>
                                 <div className="col-lg-6 col-md-6 col-sm-12">
                                     <label>รายละเอียด</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressdetail} onChange={(e) => this.setState({pop_progressdetail: e.target.value})}/>
-                                </div>
-                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
-                                    <label>หน่วย</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressunit} onChange={(e) => this.setState({pop_progressunit: e.target.value})}/>
+                                    <input type="text" className="form-control" value={this.state.pop_progressdetail} onChange={(e) => this.setState({ pop_progressdetail: e.target.value })} />
                                 </div>
                                 <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
                                     <label>ปริมาณ</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressvolumn} onChange={(e) => this.setState({pop_progressvolumn: e.target.value})}/>
+                                    <input type="text" className="form-control" value={this.state.pop_progressvolumn} onChange={(e) => this.setState({ pop_progressvolumn: e.target.value.replace(/[^0-9]/g, '') })} />
+                                </div>
+                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
+                                    <label>หน่วย</label>
+                                    <input type="text" className="form-control" value={this.state.pop_progressunit} onChange={(e) => this.setState({ pop_progressunit: e.target.value })} />
                                 </div>
                             </div>
                         </Modal.Body>
@@ -326,7 +377,13 @@ export default class BI extends Component {
                             <div className={styles.row} style={{ width: '100%' }}>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} >บันทึกข้อมูล</button>
+                                    {
+                                        this.state.pop_progressdetail && this.state.pop_progressvolumn && this.state.pop_progressunit ?
+                                            <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.createItemprogress()}>สร้างรายละเอียดงาน</button>
+                                            :
+                                            <button type="button" variant="primary" className="btn btn-success" disabled={true} style={{ width: '100%' }} >สร้างรายละเอียดงาน</button>
+                                    }
+
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
                                     <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.showpopupprogress(!this.state.popupprogress)}>ยกเลิก</button>
@@ -340,9 +397,9 @@ export default class BI extends Component {
 
                     <div className={styles.row} style={{ textAlign: 'center' }}>
                         <nav className="slidemenu">
-                            <input type="radio" name="slideItem" id="slide-item-1" className="slide-toggle" defaultChecked={this.state.tabindex==='1' ? true : false} />
+                            <input type="radio" name="slideItem" id="slide-item-1" className="slide-toggle" defaultChecked={this.state.tabindex === '1' ? true : false} />
                             <label htmlFor="slide-item-1"><span style={{ fontWeight: 'bold', fontSize: 25 }} onClick={() => this.setState({ tabindex: '1' })}>TIMESHEET</span></label>
-                            <input type="radio" name="slideItem" id="slide-item-2" className="slide-toggle" defaultChecked={this.state.tabindex==='2' ? true : false}/>
+                            <input type="radio" name="slideItem" id="slide-item-2" className="slide-toggle" defaultChecked={this.state.tabindex === '2' ? true : false} />
                             <label htmlFor="slide-item-2"><span style={{ fontWeight: 'bold', fontSize: 25 }} onClick={() => this.setState({ tabindex: '2' })}>PROGRESS</span></label>
                             <div className="clear"></div>
                             <div className="slider"><div className="bar"></div></div>
@@ -362,13 +419,13 @@ export default class BI extends Component {
                             <>
                                 <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20, fontSize: 15 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <div style={{ fontWeight: 'bold' }}><span style={{fontWeight: 'bold'}}>Daily Timesheet Report (1)</span></div>
+                                        <div style={{ fontWeight: 'bold' }}><span style={{ fontWeight: 'bold' }}>Daily Timesheet Report (1)</span></div>
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12">
                                         <label>Date</label>
-                                        <input type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({txt_date: e.target.value})} className="form-control" style={{ width: '97%', fontSize: 13}} />
+                                        <input type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })} className="form-control" style={{ width: '97%', fontSize: 13 }} />
                                     </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{marginTop: 5}}>
+                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
                                         <label>Project Name</label>
                                         <Select
                                             options={this.state.optionprojectname}
@@ -377,7 +434,7 @@ export default class BI extends Component {
                                             styles={stylesselect}
                                         />
                                     </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{marginTop: 5}}>
+                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
                                         <label>ช่วง</label>
                                         <Select
                                             options={this.state.optionzone}
@@ -386,7 +443,7 @@ export default class BI extends Component {
                                             styles={stylesselect}
                                         />
                                     </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{marginTop: 5}}>
+                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
                                         <label>กิจกรรม</label>
                                         <Select
                                             options={this.state.optionactivity}
@@ -395,7 +452,7 @@ export default class BI extends Component {
                                             styles={stylesselect}
                                         />
                                     </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{marginTop: 5}}>
+                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
                                         <label>พื้นที่งาน</label>
                                         <Select
                                             options={this.state.optionlocation}
@@ -407,12 +464,12 @@ export default class BI extends Component {
                                 </div>
                                 <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <div style={{ width: '50%', float: 'left'}}><span style={{fontWeight: 'bold'}}>ข้อมูลพนักงานรายวัน</span></div>
+                                        <div style={{ width: '50%', float: 'left' }}><span style={{ fontWeight: 'bold' }}>ข้อมูลพนักงานรายวัน</span></div>
                                         <div style={{ width: '50%', float: 'right', textAlign: 'right' }}>
                                             {/* <i className="fa-solid fa-circle-plus" style={{ fontSize: 30, color: 'gray' }} onClick={() => this.showpopupinput(true)}></i> */}
                                         </div>
                                     </div>
-                                    <table className="table" style={{ fontSize: 12 }}>
+                                    <table className="table" style={{ fontSize: 12, lineHeight: 1 }}>
                                         <thead>
                                             <tr>
                                                 <th>รหัส</th>
@@ -423,44 +480,44 @@ export default class BI extends Component {
                                             {/* // */}
                                             {
                                                 this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
-                                                this.state.item_employee ?
-                                                    this.state.item_employee.map((item, index) => {
-                                                        return (
-                                                            <>
-                                                                <tr key={index} style={{ borderBottomStyle: 'hidden' }}>
-                                                                    <td>{item.empcode}</td>
-                                                                    <td colSpan={5}><span onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span></td>
-                                                                    <td>
-                                                                        {
-                                                                            index === 0 ?
-                                                                            <i className="fa-solid fa-square-check" style={{ fontSize: 20 }}></i>
-                                                                            : <></>
-                                                                        }
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td></td>
-                                                                    <td style={{ textAlign: 'center' }}>
-                                                                        <div>ช่วงแรก</div>
-                                                                        <div>{item.befstart}-{item.befend}</div>
-                                                                    </td>
-                                                                    <td style={{ textAlign: 'center' }}>
-                                                                        <div>ช่วงหลัง</div>
-                                                                        <div>{item.atfstart}-{item.atfend}</div>
-                                                                    </td>
-                                                                    <td style={{ textAlign: 'center' }}>
-                                                                        <div>OT</div>
-                                                                        <div>{item.otstart}-{item.otend}</div>
-                                                                    </td>
-                                                                </tr>
-                                                            </>
-                                                        )
-                                                    })
-                                                    : 
-                                                    <tr>
-                                                        <td colSpan={7} style={{textAlign: 'center'}}>ไม่พบรายชื่อ</td>
-                                                    </tr>
-                                                    :<></>
+                                                    this.state.item_employee ?
+                                                        this.state.item_employee.map((item, index) => {
+                                                            return (
+                                                                <>
+                                                                    <tr key={index} style={{ borderBottomStyle: 'hidden' }}>
+                                                                        <td>{item.empcode}</td>
+                                                                        <td colSpan={5}><span onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span></td>
+                                                                        <td>
+                                                                            {
+                                                                                index === 0 ?
+                                                                                    <i className="fa-solid fa-square-check" style={{ fontSize: 20 }}></i>
+                                                                                    : <></>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td></td>
+                                                                        <td style={{ textAlign: 'center' }}>
+                                                                            <div>ช่วงแรก</div>
+                                                                            <div>{item.befstart}-{item.befend}</div>
+                                                                        </td>
+                                                                        <td style={{ textAlign: 'center' }}>
+                                                                            <div>ช่วงหลัง</div>
+                                                                            <div>{item.atfstart}-{item.atfend}</div>
+                                                                        </td>
+                                                                        <td style={{ textAlign: 'center' }}>
+                                                                            <div>OT</div>
+                                                                            <div>{item.otstart}-{item.otend}</div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </>
+                                                            )
+                                                        })
+                                                        :
+                                                        <tr>
+                                                            <td colSpan={7} style={{ textAlign: 'center' }}>ไม่พบรายชื่อ</td>
+                                                        </tr>
+                                                    : <></>
                                             }
                                             {/* // */}
                                         </tbody>
@@ -475,51 +532,62 @@ export default class BI extends Component {
                                 </div>
                             </>
                             :
-                        this.state.tabindex === '2' ?
-                            <>
-                                <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20, fontSize: 15 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <div style={{ fontWeight: 'bold'}}><span style={{fontWeight: 'bold'}}>Daily Timesheet Report (2)</span></div>
-                                    </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{marginTop: 5}}>
-                                        <label>เป้าหมาย</label>
-                                        <input type="text" value={this.state.txt_goal} onChange={(e) => this.setState({txt_goal: e.target.value})} className="form-control" style={{ width: '97%' }} />
-                                    </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{marginTop: 5}}>
-                                        <label>ทำได้จริง</label>
-                                        <input type="text" value={this.state.txt_actual} onChange={(e) => this.setState({txt_actual: e.target.value})} className="form-control" style={{ width: '97%' }} />
-                                    </div>
-                                </div>
-                                <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <div style={{ width: '50%', float: 'left'}}><span style={{fontWeight: 'bold'}}>รายละเอียดงาน/อื่นๆ</span></div>
-                                        <div style={{ width: '50%', float: 'right', textAlign: 'right' }}>
-                                            <i className="fa-solid fa-circle-plus" style={{ fontSize: 30, color: 'gray' }} onClick={() => this.showpopupprogress(true)}></i>
+                            this.state.tabindex === '2' ?
+                                <>
+                                    <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20, fontSize: 15 }}>
+                                        <div className="col-lg-12 col-md-12 col-sm-12">
+                                            <div style={{ fontWeight: 'bold' }}><span style={{ fontWeight: 'bold' }}>Daily Timesheet Report (2)</span></div>
+                                        </div>
+                                        <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
+                                            <label>เป้าหมาย</label>
+                                            <input type="text" value={this.state.jobtargetvalue + ' ' + this.state.jobtargetlabel} disabled={true} className="form-control" style={{ width: '97%' }} />
+                                        </div>
+                                        <div className="col-lg-3 col-md-3 col-sm-8" style={{ marginTop: 5 }}>
+                                            <label>ทำได้จริง</label>
+                                            <div>
+                                                <input type="text" className={styles.inpuboxs} value={this.state.txt_actual} onChange={(e) => this.setState({ txt_actual: e.target.value.replace(/[^0-9]/g, '') })} /> {this.state.jobtargetlabel}
+                                            </div>
                                         </div>
                                     </div>
-                                    <table className="table table-striped" style={{ fontSize: 12 }}>
-                                        <thead>
-                                            <tr>
-                                                <th>ลำดับ</th>
-                                                <th colSpan={3}>รายละเอียด</th>
-                                                <th>ปริมาณ</th>
-                                                <th>หน่วย</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {/* // */}
-                                            <tr style={{ borderBottomStyle: 'hidden' }}>
-                                                <td>1</td>
-                                                <td colSpan={3}>KYAW LIN AUNG รายละเอียดงาน กกกกก</td>
-                                                <td>200</td>
-                                                <td>mete</td>
-                                            </tr>
-                                            
-                                            {/* // */}
-
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
+                                        <div className="col-lg-12 col-md-12 col-sm-12">
+                                            <div style={{ width: '50%', float: 'left' }}><span style={{ fontWeight: 'bold' }}>รายละเอียดงาน/อื่นๆ</span></div>
+                                            <div style={{ width: '50%', float: 'right', textAlign: 'right' }}>
+                                                <i className="fa-solid fa-circle-plus" style={{ fontSize: 30, color: 'gray' }} onClick={() => this.showpopupprogress(true)}></i>
+                                            </div>
+                                        </div>
+                                        <table className="table table-striped" style={{ fontSize: 12 }}>
+                                            <thead>
+                                                <tr>
+                                                    <th>ลำดับ</th>
+                                                    <th colSpan={3}>รายละเอียด</th>
+                                                    <th>ปริมาณ</th>
+                                                    <th>หน่วย</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {/* // */}
+                                                {
+                                                    this.state.itemprogress ?
+                                                        this.state.itemprogress.map((item, index) => {
+                                                            return (
+                                                                <tr style={{ borderBottomStyle: 'hidden' }} key={index}>
+                                                                    <td>1</td>
+                                                                    <td colSpan={3}>{item.detail}</td>
+                                                                    <td>{item.volumn}</td>
+                                                                    <td>{item.unit}</td>
+                                                                </tr>
+                                                            )
+                                                        })
+                                                        :
+                                                        <tr>
+                                                            <td colSpan={6}>-</td>
+                                                        </tr>
+                                                }
+                                                {/* // */}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                     <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                         <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginBottom: 10, }}>
@@ -529,9 +597,9 @@ export default class BI extends Component {
                                         </div>
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                     </div>
-                            </>
-                            :
-                        <></>
+                                </>
+                                :
+                                <></>
                     }
                 </div>
                 <br /><br /><br />

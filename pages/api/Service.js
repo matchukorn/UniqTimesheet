@@ -122,6 +122,28 @@ export default class Service{
         }
         return data;
     }
+    masterjobid = async (token, ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "masterjobid");
+        formData.append("ProjectCode", ProjectCode);
+        formData.append("ProjectActivityCode", ProjectActivityCode);
+        formData.append("ProjectSubActivityCode", ProjectSubActivityCode);
+        formData.append("ProjectLocationCode", ProjectLocationCode);
+        formData.append("ProjectSubLocationCode", ProjectSubLocationCode);
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+
 
 
 }
