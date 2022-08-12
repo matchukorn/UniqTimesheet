@@ -45,13 +45,13 @@ a {
   text-align: center;
   display: block;
   float: left;
-  color: rgb(111, 109, 109);
+  color: rgb(55, 54, 54);
   opacity: 0.2;
 
 }
 .slidemenu label:hover{
   cursor: pointer;
-  color: rgb(165, 158, 158);
+  color: rgb(216, 211, 211);
 }
 .slidemenu label span{
   display: block;

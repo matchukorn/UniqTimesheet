@@ -28,7 +28,7 @@ export default class Login extends Component {
         new Service().gettoken(user).then(res => {
           if(res.data.status==='1'){
             setCookies('token', res.data.token, { path: '/', domain: '', maxAge: 4 * 60 * 60 });
-            window.location.href = "/main";
+            window.location.href = "/timesheet";
           }else{
             Swal.fire({
               position: 'center',
@@ -52,6 +52,8 @@ export default class Login extends Component {
     }
     event.preventDefault();
   }
+
+
 
 
   render() {
