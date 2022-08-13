@@ -18,22 +18,6 @@ export default class Login extends Component {
     this.username = React.createRef();
   }
   componentDidMount() {
-    window.lastTouchTimestamp = 0;
-    document.addEventListener('touchstart', function (event) {
-      const nowTouchTimestamp = new Date().getTime();
-      const tapDelayThreshold = 300;
-      const tapDelay = nowTouchTimestamp - window.lastTouchTimestamp;
-      if (tapDelay <= tapDelayThreshold) {
-        event.preventDefault();
-      }
-      window.lastTouchTimestamp = nowTouchTimestamp;
-    }, { passive: false });
-    // prevent zooming from pinching on iOS
-    document.addEventListener('touchmove', function (event) {
-      if (event.touches.length > 1) {
-        event.preventDefault();
-      }
-    }, { passive: false });
     this.setState({ s_heigth: window.innerHeight });
     if (getCookie('token')) {
       window.location.href = "/timesheet"
@@ -83,8 +67,9 @@ export default class Login extends Component {
       <>
         <Head>
           <title>ลงชื่อเข้าใช้งาน</title>
-          <link rel="icon" type="image/png" href="../logo.png" />
-          <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=device-dpi, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"></meta>
+          {/* <link rel="icon" type="image/png" href="../logo.png" /> */}
+          <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         </Head>
         <div className={styles.row} style={{ backgroundColor: '', height: this.state.s_heigth }}>
           <div className="col-lg-12 col-md-12 col-sm-12">

@@ -75,22 +75,6 @@ export default class BI extends Component {
     }
     componentDidMount() {
         window.onbeforeunload = function () { return false; }
-        window.lastTouchTimestamp = 0;
-        document.addEventListener('touchstart', function (event) {
-            const nowTouchTimestamp = new Date().getTime();
-            const tapDelayThreshold = 300;
-            const tapDelay = nowTouchTimestamp - window.lastTouchTimestamp;
-            if (tapDelay <= tapDelayThreshold) {
-                event.preventDefault();
-            }
-            window.lastTouchTimestamp = nowTouchTimestamp;
-        }, { passive: false });
-        // prevent zooming from pinching on iOS
-        document.addEventListener('touchmove', function (event) {
-            if (event.touches.length > 1) {
-                event.preventDefault();
-            }
-        }, { passive: false });
         if (getCookie('token')) {
             this.getuserinfo();
             this.listmasteremployee();
