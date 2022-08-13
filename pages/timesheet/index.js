@@ -686,10 +686,32 @@ export default class BI extends Component {
 
                     <div className={styles.row} style={{ textAlign: 'center' }}>
                         <nav className="slidemenu">
-                            <input type="radio" name="slideItem" id="slide-item-1" className="slide-toggle" defaultChecked={this.state.tabindex === '1' ? true : false} />
-                            <label htmlFor="slide-item-1"><span style={{ fontWeight: 'bold', fontSize: 25 }} onClick={() => this.setState({ tabindex: '1' })}>TIMESHEET</span></label>
-                            <input type="radio" name="slideItem" id="slide-item-2" className="slide-toggle" defaultChecked={this.state.tabindex === '2' ? true : false} />
-                            <label htmlFor="slide-item-2"><span style={{ fontWeight: 'bold', fontSize: 25 }} onClick={() => this.setState({ tabindex: '2' })}>PROGRESS</span></label>
+                            {
+                                this.state.tabindex === '1' ?
+                                    <>
+                                        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', marginTop: 35, marginBottom: 20, }}>
+                                            <div style={{ width: '50%', marginLeft: 40, marginRight: 30 }}>
+                                                <span style={{ fontWeight: 'bold', fontSize: 25 }} className="slider1">TIMESHEET</span>
+                                            </div>
+                                            <div style={{ width: '50%' }}>
+                                                <span className="slider2" style={{ fontWeight: 'bold', fontSize: 25 }} onClick={() => this.setState({ tabindex: '2' })}>PROGRESS</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                    :
+                                    this.state.tabindex === '2' ?
+                                        <>
+                                            <div style={{ display: 'flex', flexDirection: 'row', width: '100%', marginTop: 35, marginBottom: 20, }}>
+                                                <div style={{ width: '50%', marginLeft: 40, marginRight: 30 }}>
+                                                    <span style={{ fontWeight: 'bold', fontSize: 25 }} className="slider2" onClick={() => this.setState({ tabindex: '1' })}>TIMESHEET</span>
+                                                </div>
+                                                <div style={{ width: '50%' }}>
+                                                    <span className="slider1" style={{ fontWeight: 'bold', fontSize: 25 }}>PROGRESS</span>
+                                                </div>
+                                            </div>
+                                        </>
+                                        : <></>
+                            }
                             <div className="clear"></div>
                             <div className="slider"><div className="bar"></div></div>
                         </nav>
@@ -821,7 +843,9 @@ export default class BI extends Component {
                                 <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
                                     <div className="col-lg-4 col-md-4 col-sm-4"></div>
                                     <div className="col-lg-4 col-md-4 col-sm-12" style={{ marginBottom: 10, }}>
-                                        <button type="button" className="btn btn-outline-success" style={{ width: '100%' }}>ถัดไป</button>
+                                        <label htmlFor="slide-item-2" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.setState({ tabindex: '2' })}>
+                                            ถัดไป
+                                        </label>
                                     </div>
                                     <div className="col-lg-4 col-md-4 col-sm-4"></div>
                                 </div>
