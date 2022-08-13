@@ -717,11 +717,11 @@ export default class BI extends Component {
                         </nav>
                     </div>
                     <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 10 }}>
-                        <div className="col-lg-12 col-md-12 col-sm-12">
+                        {/* <div className="col-lg-12 col-md-12 col-sm-12">
                             <div style={{ fontWeight: 'bold', fontSize: 18 }}>Report Information</div>
-                        </div>
+                        </div> */}
                         <div className="col-lg-3 col-md-3 col-sm-12">
-                            <label style={{ fontSize: 15 }}>Employee : {this.state.EmployeeCode} {this.state.EmployeeDisplayName}</label>
+                            <label style={{ fontSize: 15 }}>ผู้คุมงาน : {this.state.EmployeeCode} {this.state.EmployeeDisplayName}</label>
                         </div>
                     </div>
 
@@ -729,15 +729,15 @@ export default class BI extends Component {
                         this.state.tabindex === '1' ?
                             <>
                                 <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20, fontSize: 15 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                    {/* <div className="col-lg-12 col-md-12 col-sm-12">
                                         <div style={{ fontWeight: 'bold' }}><span style={{ fontWeight: 'bold' }}>Daily Timesheet Report (1)</span></div>
-                                    </div>
+                                    </div> */}
                                     <div className="col-lg-3 col-md-3 col-sm-12">
-                                        <label>*Date</label>
+                                        <label>*วันที่</label>
                                         <input type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })} className="form-control" style={{ width: '97%', fontSize: 13 }} />
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>*Project Name</label>
+                                        <label>*ชื่อโครงการ</label>
                                         <Select
                                             options={this.state.optionprojectname}
                                             value={this.state.txt_projectnamevalue}
