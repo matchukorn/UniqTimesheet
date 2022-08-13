@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 var config = {headers: {"Accept": "application/json"}};
-var Url = "http://43.249.106.78/api/";
+var Url = "http://43.249.106.78:7000/api/";
 
 
 export default class Service{
