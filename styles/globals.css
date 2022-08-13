@@ -51,7 +51,7 @@ a {
 }
 .slidemenu label:hover{
   cursor: pointer;
-  color: rgb(216, 211, 211);
+  color: rgb(55, 54, 54);
 }
 .slidemenu label span{
   display: block;

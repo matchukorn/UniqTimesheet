@@ -68,20 +68,18 @@ export default class BI extends Component {
             jobtargetvalue: '',
             jobtargetlabel: '',
             activitycode: '',
+            CostCenterCode: '',
+            JobCode: '',
         }
     }
     componentDidMount() {
+        window.onbeforeunload = function () {return false;}
         if(getCookie('token')){
             this.getuserinfo();
             this.listmasteremployee();
         }else{
             window.location.href = "/"
         }
-    }
-    gettoken = async (emp_code) => {
-        await new Service().gettoken(emp_code).then(res => {
-            // console.log(JSON.stringify(res.data));
-        });
     }
     getuserinfo = async () => {
         await new Service().getuserinfo(getCookie('token')).then(res => {
@@ -95,59 +93,113 @@ export default class BI extends Component {
     }
     projectmaster = async () => {
         await new Service().projectmaster(getCookie('token')).then(res => {
-            this.setState({
-                optionprojectname: res.data,
-            });
+            if(res.data){
+                this.setState({
+                    optionprojectname: res.data,
+                });
+            }else{
+                this.setState({
+                    optionprojectname: [],
+                });
+            }
         });
     }
     zonename = async (parject_code) => {
         await new Service().zonename(getCookie('token'), parject_code).then(res => {
-            this.setState({
-                optionzone: res.data,
-                txt_zonevalue: '',
-                txt_zonelabel: ''
-            });
+            if(res.data){
+                this.setState({
+                    optionzone: res.data,
+                    txt_zonevalue: '',
+                    txt_zonelabel: ''
+                });
+            }else{
+                this.setState({
+                    optionzone: [],
+                    txt_zonevalue: '',
+                    txt_zonelabel: ''
+                });
+            }
         });
     }
     projectactivity = async (parject_code) => {
         await new Service().projectactivity(getCookie('token'), parject_code).then(res => {
-            this.setState({
-                optionactivity: res.data,
-                txt_activityvalue: '',
-                txt_activitycode: '',
-                txt_activitylabel: '',
-            });
+            if(res.data){
+                this.setState({
+                    optionactivity: res.data,
+                    txt_activityvalue: '',
+                    txt_activitycode: '',
+                    txt_activitylabel: '',
+                });
+            }else{
+                this.setState({
+                    optionactivity: '',
+                    txt_activityvalue: '',
+                    txt_activitycode: '',
+                    txt_activitylabel: '',
+                });
+            }
         });
     }
     projectsublocation = async (par_projectcode, par_location) => {
         await new Service().projectsublocation(getCookie('token'), par_projectcode, par_location).then(res => {
-            this.setState({
-                optionlocation: res.data,
-                txt_locationvalue: '',
-                txt_locationlabel: ''
-            });
+            if(res.data){
+                this.setState({
+                    optionlocation: res.data,
+                    txt_locationvalue: '',
+                    txt_locationlabel: ''
+                });
+            }else{
+                this.setState({
+                    optionlocation: '',
+                    txt_locationvalue: '',
+                    txt_locationlabel: ''
+                });
+            }
         });
     }
     employeesubactivity = async (ProjectActivity, ProjectSubActivityCode) => {
         await new Service().employeesubactivity(getCookie('token'), ProjectActivity, ProjectSubActivityCode, this.state.EmployeeCode, 'D').then(res => {
-            this.setState({
-                item_employee: res.data,
-            });
+            if(res.data){
+                this.setState({
+                    item_employee: res.data,
+                });
+            }else{
+                this.setState({
+                    item_employee: '',
+                });
+            }
         });
     }
     masterjobid = async (ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode) => {
         await new Service().masterjobid(getCookie('token'), ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode).then(res => {
-            this.setState({
-                jobtargetvalue: res.data.JobTarget,
-                jobtargetlabel: res.data.JobUnit,
-            });
+            if(res.data){
+                this.setState({
+                    JobCode: res.data.JobCode,
+                    CostCenterCode: res.data.CostCenterCode,
+                    jobtargetvalue: res.data.JobTarget,
+                    jobtargetlabel: res.data.JobUnit,
+                });
+            }else{
+                this.setState({
+                    JobCode: '',
+                    CostCenterCode: '',
+                    jobtargetvalue: '',
+                    jobtargetlabel: '',
+                });
+            }
         });
     }
     listmasteremployee = async () => {
         await new Service().listmasteremployee(getCookie('token')).then(res => {
-            this.setState({
-                optionempname: res.data,
-            });
+            if(res.data){
+                this.setState({
+                    optionempname: res.data,
+                });
+            }else{
+                this.setState({
+                    optionempname: []
+                });
+            }
         });
     }
 
@@ -277,23 +329,42 @@ export default class BI extends Component {
     }
     createEmployee = () => {
         let { item_employee } = this.state;
-        if(this.state.pop_empcode && this.state.pop_fullname){
-            let arr = {
-                empcode: this.state.pop_empcode.value,
-                empname: this.state.pop_fullname,
-                befstart: this.state.pop_befstart,
-                befend: this.state.pop_befend,
-                atfstart: this.state.pop_aftstart,
-                atfend: this.state.pop_aftend,
-                otstart: this.state.pop_otstart,
-                otend: this.state.pop_otend,
-                useredit: '0',
+        if(item_employee) {
+            if(this.state.pop_empcode && this.state.pop_fullname){
+                let arr = {
+                    empcode: this.state.pop_empcode.value,
+                    empname: this.state.pop_fullname,
+                    emptype: 'D',
+                    befstart: this.state.pop_befstart,
+                    befend: this.state.pop_befend,
+                    atfstart: this.state.pop_aftstart,
+                    atfend: this.state.pop_aftend,
+                    otstart: this.state.pop_otstart,
+                    otend: this.state.pop_otend,
+                    useredit: '0',
+                }
+                item_employee.push(arr);
+                this.setState({ item_employee });
+                this.showpopupcreateemployee(false);
             }
-            item_employee.push(arr);
-            this.setState({ item_employee });
-            this.showpopupcreateemployee(false);
+        }else{
+            if(this.state.pop_empcode && this.state.pop_fullname){
+                let arr = [{
+                    empcode: this.state.pop_empcode.value,
+                    empname: this.state.pop_fullname,
+                    empname: 'D',
+                    befstart: this.state.pop_befstart,
+                    befend: this.state.pop_befend,
+                    atfstart: this.state.pop_aftstart,
+                    atfend: this.state.pop_aftend,
+                    otstart: this.state.pop_otstart,
+                    otend: this.state.pop_otend,
+                    useredit: '0',
+                }]
+                this.setState({ item_employee: arr });
+                this.showpopupcreateemployee(false);
+            }
         }
-        
     }
     removeEmployee = (key) => {
         let { item_employee } = this.state;
@@ -319,12 +390,12 @@ export default class BI extends Component {
             if(item_employee[0].befstart && item_employee[0].befend){
                 for(let x=0;x<item_employee.length;x++) {
                     if(item_employee[x].useredit==='0'){
-                        item_employee[x].befstart = this.state.pop_befstart;
-                        item_employee[x].befend = this.state.pop_befend;
-                        item_employee[x].atfstart = this.state.pop_aftstart;
-                        item_employee[x].atfend = this.state.pop_aftend;
-                        item_employee[x].otstart = this.state.pop_otstart;
-                        item_employee[x].otend = this.state.pop_otend;
+                        item_employee[x].befstart = item_employee[0].befstart;
+                        item_employee[x].befend = item_employee[0].befend;
+                        item_employee[x].atfstart = item_employee[0].atfstart;
+                        item_employee[x].atfend = item_employee[0].atfend;
+                        item_employee[x].otstart = item_employee[0].otstart;
+                        item_employee[x].otend = item_employee[0].otend;
                     }else{
                     }
                 }
@@ -337,45 +408,78 @@ export default class BI extends Component {
     }
 
     btn_confrim = () => {
-        Swal.fire({
-            title: 'การรายงานเท็จถือเป็นความผิดวินัยอย่างร้ายแรง และมีบทลงโทษสูงสุดตามกฎระเบียบของบริษัท',
-            text: "",
-            icon: 'warning',
-            showCloseButton: true,
-            showCancelButton: false,
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'ยอมรับ'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                //////////
-                console.log(
-                    this.state.EmployeeCode,
-                    this.state.EmployeeDisplayName,
-                    this.state.EmplolyeeTypeCode,
-                    this.state.txt_date,
-                    this.state.txt_projectnamevalue,
-                    this.state.txt_projectlabel,
-                    this.state.txt_zonevalue,
-                    this.state.txt_zonelabel,
-                    this.state.txt_activityvalue,
-                    this.state.txt_activitycode,
-                    this.state.txt_activitylabel,
-                    this.state.txt_locationvalue,
-                    this.state.txt_locationlabel,
-                    this.state.txt_goal,
-                    this.state.txt_actual,
-                    this.state.itemprogress,
-                    this.state.item_employee,
-                    this.state.jobtargetvalue,
-                    this.state.jobtargetlabel,
-                    this.state.activitycode,
-                )
-                ////////
-            }
-        })
+        if(
+            this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value && 
+            this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
+            this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
+            this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee.length > 0
+        ){
+            Swal.fire({
+                title: 'การรายงานเท็จถือเป็นความผิดวินัยอย่างร้ายแรง และมีบทลงโทษสูงสุดตามกฎระเบียบของบริษัท',
+                text: "",
+                icon: 'warning',
+                showCloseButton: true,
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'ยอมรับ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    //////////
+                    new Service().savetimesheet(
+                        getCookie('token'), 
+                        this.state.EmployeeCode, // H
+                        this.state.txt_date, // H
+                        this.state.txt_projectnamevalue.value, // H
+                        this.state.txt_zonevalue.value, // H
+                        this.state.txt_projectnamevalue.activity, // H
+                        this.state.JobCode, // H
+                        this.state.txt_activityvalue.code,// H
+                        this.state.CostCenterCode, // H
+                        this.state.jobtargetvalue, // H
+                        this.state.jobtargetlabel, // H
+                        this.state.txt_actual, // H
+                        this.state.jobtargetlabel, // H
+                        this.state.item_employee,
+                        this.state.itemprogress
+                    ).then(res => {
+                        if (res.data.status === '1') {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: res.data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                            window.location.href='/timesheet'
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: res.data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                    })
+                    ////////
+                }
+            })
+        }else{
+            Swal.fire({
+                position: 'center',
+                icon: 'warning',
+                title: 'กรุณากรอกข้อมูลให้ครบ',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
     }
-
+    // window.onbeforeunload = function () {return false;}
     render() {
+        let checkitememp = this.state.item_employee.filter((item) => {
+            return item.empcode==='' || item.empname==='' || item.befstart==='' ||item.befend==='' || item.atfstart==='' || item.atfend===''
+        })
+        console.log(JSON.stringify(checkitememp))
         return (
             <>
                 {/* <Navbarx /> */}
@@ -436,7 +540,12 @@ export default class BI extends Component {
                             <div className={styles.row} style={{ width: '100%' }}>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
+                                    {
+                                        this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend ?
+                                        <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
+                                        :
+                                        <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล</button>
+                                    }
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
                                     <button variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.showpopupinput(false, this.state.keyitememp, '', '')}>ยกเลิก</button>
@@ -597,11 +706,11 @@ export default class BI extends Component {
                                         <div style={{ fontWeight: 'bold' }}><span style={{ fontWeight: 'bold' }}>Daily Timesheet Report (1)</span></div>
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12">
-                                        <label>Date</label>
+                                        <label>*Date</label>
                                         <input type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })} className="form-control" style={{ width: '97%', fontSize: 13 }} />
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>Project Name</label>
+                                        <label>*Project Name</label>
                                         <Select
                                             options={this.state.optionprojectname}
                                             value={this.state.txt_projectnamevalue}
@@ -610,7 +719,7 @@ export default class BI extends Component {
                                         />
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>ช่วง</label>
+                                        <label>*ช่วง</label>
                                         <Select
                                             options={this.state.optionzone}
                                             value={this.state.txt_zonevalue}
@@ -619,7 +728,7 @@ export default class BI extends Component {
                                         />
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>กิจกรรม</label>
+                                        <label>*กิจกรรม</label>
                                         <Select
                                             options={this.state.optionactivity}
                                             value={this.state.txt_activityvalue}
@@ -628,7 +737,7 @@ export default class BI extends Component {
                                         />
                                     </div>
                                     <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>พื้นที่งาน</label>
+                                        <label>*พื้นที่งาน</label>
                                         <Select
                                             options={this.state.optionlocation}
                                             value={this.state.txt_locationvalue}
@@ -639,7 +748,7 @@ export default class BI extends Component {
                                 </div>
                                 <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <div style={{ width: '50%', float: 'left' }}><span style={{ fontWeight: 'bold' }}>ข้อมูลพนักงานรายวัน</span></div>
+                                        <div style={{ width: '50%', float: 'left' }}><span style={{ fontWeight: 'bold' }}>ข้อมูลพนักงานรายวัน*</span></div>
                                         <div style={{ width: '50%', float: 'right', textAlign: 'right' }}>
                                             {
                                                 this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
@@ -772,7 +881,19 @@ export default class BI extends Component {
                                     <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                         <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginBottom: 10, }}>
-                                            <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.btn_confrim()}>ส่งข้อมูล</button>
+                                            {
+                                                this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value && 
+                                                this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
+                                                this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
+                                                this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee ?
+                                                checkitememp[0] ?
+                                                    <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} disabled={true}>ส่งข้อมูล (กรอกเวลาให้ครบ)</button>
+                                                    :
+                                                    <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.btn_confrim()}>ส่งข้อมูล</button>
+                                                : 
+                                                <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} disabled={true}>ส่งข้อมูล (กรอกข้อมูลให้ครบ)</button>
+                                            }
+                                            
                                         </div>
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                     </div>

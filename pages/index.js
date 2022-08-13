@@ -74,7 +74,7 @@ export default class Login extends Component {
                     <div className={styles.row}>
                       <div className="col-lg-12 col-md-12 col-sm-12">
                         <center>
-                          <Image src={logo} alt="logo" />
+                          <Image src={logo} alt="logo" width={120} height={150}/>
                         </center>
                       </div>
                       <div className="col-lg-12 col-md-12 col-sm-12"><br /></div>
