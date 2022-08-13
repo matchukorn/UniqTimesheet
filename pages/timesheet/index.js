@@ -684,7 +684,7 @@ export default class BI extends Component {
                     </Modal>
                     {/* End */}
 
-                    <div className={styles.row} style={{ textAlign: 'center' }}>
+                    <div className={styles.row+' '+styles.boxres} style={{ textAlign: 'center' }}>
                         <nav className="slidemenu">
                             {
                                 this.state.tabindex === '1' ?
