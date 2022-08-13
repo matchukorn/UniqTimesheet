@@ -68,7 +68,7 @@ export default class Login extends Component {
         <Head>
           <title>ลงชื่อเข้าใช้งาน</title>
           {/* <link rel="icon" type="image/png" href="../logo.png" /> */}
-          <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
+          <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         </Head>
         <div className={styles.row} style={{ backgroundColor: '', height: this.state.s_heigth }}>
@@ -91,7 +91,7 @@ export default class Login extends Component {
                           <input type="text" className="form-control" name="username" ref={this.username} placeholder="รหัสพนักงาน" autoFocus={true} />
                         </div>
                         <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 15 }}>
-                          <button type="submit" className="btn btn-success" style={{ width: '100%', backgroundColor: '#8c1e21' }}>Sign In</button>
+                          <button type="submit" className="btn btn-danger" style={{ width: '100%', backgroundColor: '#8c1e21' }}>Sign In</button>
                         </div>
                         <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 25, textAlign: 'center' }}>
                           <div style={{ fontSize: 11 }}>บริษัท ยูนิค เอ็นจิเนียริ่ง แอนด์ คอนสตรัคชั่น จํากัด (มหาชน)</div>
