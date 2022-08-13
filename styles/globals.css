@@ -18,7 +18,9 @@ a {
 .col-sm-12{
   width: 100%;
 }
-
+* {
+  touch-action: manipulation;
+}
 
 
 

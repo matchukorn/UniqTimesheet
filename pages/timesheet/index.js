@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styles from '../../styles/main.module.css';
 import Navbarx from '../nav';
 import Link from 'next/link';
+import Head from 'next/head';
 import { Modal } from 'react-bootstrap-v5';
 import Service from '../api/Service';
 import { getCookie, setCookies } from 'cookies-next';
@@ -73,11 +74,27 @@ export default class BI extends Component {
         }
     }
     componentDidMount() {
-        window.onbeforeunload = function () {return false;}
-        if(getCookie('token')){
+        window.onbeforeunload = function () { return false; }
+        window.lastTouchTimestamp = 0;
+        document.addEventListener('touchstart', function (event) {
+            const nowTouchTimestamp = new Date().getTime();
+            const tapDelayThreshold = 300;
+            const tapDelay = nowTouchTimestamp - window.lastTouchTimestamp;
+            if (tapDelay <= tapDelayThreshold) {
+                event.preventDefault();
+            }
+            window.lastTouchTimestamp = nowTouchTimestamp;
+        }, { passive: false });
+        // prevent zooming from pinching on iOS
+        document.addEventListener('touchmove', function (event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+        if (getCookie('token')) {
             this.getuserinfo();
             this.listmasteremployee();
-        }else{
+        } else {
             window.location.href = "/"
         }
     }
@@ -93,11 +110,11 @@ export default class BI extends Component {
     }
     projectmaster = async () => {
         await new Service().projectmaster(getCookie('token')).then(res => {
-            if(res.data){
+            if (res.data) {
                 this.setState({
                     optionprojectname: res.data,
                 });
-            }else{
+            } else {
                 this.setState({
                     optionprojectname: [],
                 });
@@ -106,13 +123,13 @@ export default class BI extends Component {
     }
     zonename = async (parject_code) => {
         await new Service().zonename(getCookie('token'), parject_code).then(res => {
-            if(res.data){
+            if (res.data) {
                 this.setState({
                     optionzone: res.data,
                     txt_zonevalue: '',
                     txt_zonelabel: ''
                 });
-            }else{
+            } else {
                 this.setState({
                     optionzone: [],
                     txt_zonevalue: '',
@@ -123,14 +140,14 @@ export default class BI extends Component {
     }
     projectactivity = async (parject_code) => {
         await new Service().projectactivity(getCookie('token'), parject_code).then(res => {
-            if(res.data){
+            if (res.data) {
                 this.setState({
                     optionactivity: res.data,
                     txt_activityvalue: '',
                     txt_activitycode: '',
                     txt_activitylabel: '',
                 });
-            }else{
+            } else {
                 this.setState({
                     optionactivity: '',
                     txt_activityvalue: '',
@@ -142,13 +159,13 @@ export default class BI extends Component {
     }
     projectsublocation = async (par_projectcode, par_location) => {
         await new Service().projectsublocation(getCookie('token'), par_projectcode, par_location).then(res => {
-            if(res.data){
+            if (res.data) {
                 this.setState({
                     optionlocation: res.data,
                     txt_locationvalue: '',
                     txt_locationlabel: ''
                 });
-            }else{
+            } else {
                 this.setState({
                     optionlocation: '',
                     txt_locationvalue: '',
@@ -159,11 +176,11 @@ export default class BI extends Component {
     }
     employeesubactivity = async (ProjectActivity, ProjectSubActivityCode) => {
         await new Service().employeesubactivity(getCookie('token'), ProjectActivity, ProjectSubActivityCode, this.state.EmployeeCode, 'D').then(res => {
-            if(res.data){
+            if (res.data) {
                 this.setState({
                     item_employee: res.data,
                 });
-            }else{
+            } else {
                 this.setState({
                     item_employee: '',
                 });
@@ -172,14 +189,14 @@ export default class BI extends Component {
     }
     masterjobid = async (ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode) => {
         await new Service().masterjobid(getCookie('token'), ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode).then(res => {
-            if(res.data){
+            if (res.data) {
                 this.setState({
                     JobCode: res.data.JobCode,
                     CostCenterCode: res.data.CostCenterCode,
                     jobtargetvalue: res.data.JobTarget,
                     jobtargetlabel: res.data.JobUnit,
                 });
-            }else{
+            } else {
                 this.setState({
                     JobCode: '',
                     CostCenterCode: '',
@@ -191,11 +208,11 @@ export default class BI extends Component {
     }
     listmasteremployee = async () => {
         await new Service().listmasteremployee(getCookie('token')).then(res => {
-            if(res.data){
+            if (res.data) {
                 this.setState({
                     optionempname: res.data,
                 });
-            }else{
+            } else {
                 this.setState({
                     optionempname: []
                 });
@@ -290,7 +307,7 @@ export default class BI extends Component {
         })
     }
     showpopupcreateemployee = (value) => {
-        this.setState({ 
+        this.setState({
             popupcreateemployee: value,
             pop_empcode: '',
             pop_fullname: '',
@@ -329,8 +346,8 @@ export default class BI extends Component {
     }
     createEmployee = () => {
         let { item_employee } = this.state;
-        if(item_employee) {
-            if(this.state.pop_empcode && this.state.pop_fullname){
+        if (item_employee) {
+            if (this.state.pop_empcode && this.state.pop_fullname) {
                 let arr = {
                     empcode: this.state.pop_empcode.value,
                     empname: this.state.pop_fullname,
@@ -347,8 +364,8 @@ export default class BI extends Component {
                 this.setState({ item_employee });
                 this.showpopupcreateemployee(false);
             }
-        }else{
-            if(this.state.pop_empcode && this.state.pop_fullname){
+        } else {
+            if (this.state.pop_empcode && this.state.pop_fullname) {
                 let arr = [{
                     empcode: this.state.pop_empcode.value,
                     empname: this.state.pop_fullname,
@@ -377,43 +394,43 @@ export default class BI extends Component {
             cancelButtonColor: '#d33',
             confirmButtonText: 'ยืนยัน',
             cancelButtonText: 'ยกเลิก',
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
                 item_employee.splice(key, 1)
                 this.setState({ item_employee });
             }
-          })
+        })
     }
     applyAll = () => {
         let { item_employee } = this.state;
         try {
-            if(item_employee[0].befstart && item_employee[0].befend){
-                for(let x=0;x<item_employee.length;x++) {
-                    if(item_employee[x].useredit==='0'){
+            if (item_employee[0].befstart && item_employee[0].befend) {
+                for (let x = 0; x < item_employee.length; x++) {
+                    if (item_employee[x].useredit === '0') {
                         item_employee[x].befstart = item_employee[0].befstart;
                         item_employee[x].befend = item_employee[0].befend;
                         item_employee[x].atfstart = item_employee[0].atfstart;
                         item_employee[x].atfend = item_employee[0].atfend;
                         item_employee[x].otstart = item_employee[0].otstart;
                         item_employee[x].otend = item_employee[0].otend;
-                    }else{
+                    } else {
                     }
                 }
-                this.setState({item_employee});
-            }else{
+                this.setState({ item_employee });
+            } else {
             }
         } catch (error) {
-            
+
         }
     }
 
     btn_confrim = () => {
-        if(
-            this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value && 
+        if (
+            this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value &&
             this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
             this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
             this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee.length > 0
-        ){
+        ) {
             Swal.fire({
                 title: 'การรายงานเท็จถือเป็นความผิดวินัยอย่างร้ายแรง และมีบทลงโทษสูงสุดตามกฎระเบียบของบริษัท',
                 text: "",
@@ -426,7 +443,7 @@ export default class BI extends Component {
                 if (result.isConfirmed) {
                     //////////
                     new Service().savetimesheet(
-                        getCookie('token'), 
+                        getCookie('token'),
                         this.state.EmployeeCode, // H
                         this.state.txt_date, // H
                         this.state.txt_projectnamevalue.value, // H
@@ -450,7 +467,7 @@ export default class BI extends Component {
                                 showConfirmButton: false,
                                 timer: 1500
                             })
-                            window.location.href='/timesheet'
+                            window.location.href = '/timesheet'
                         } else {
                             Swal.fire({
                                 position: 'center',
@@ -464,7 +481,7 @@ export default class BI extends Component {
                     ////////
                 }
             })
-        }else{
+        } else {
             Swal.fire({
                 position: 'center',
                 icon: 'warning',
@@ -477,11 +494,15 @@ export default class BI extends Component {
     // window.onbeforeunload = function () {return false;}
     render() {
         let checkitememp = this.state.item_employee.filter((item) => {
-            return item.empcode==='' || item.empname==='' || item.befstart==='' ||item.befend==='' || item.atfstart==='' || item.atfend===''
+            return item.empcode === '' || item.empname === '' || item.befstart === '' || item.befend === '' || item.atfstart === '' || item.atfend === ''
         })
-        console.log(JSON.stringify(checkitememp))
         return (
             <>
+                <Head>
+                    <title>TIMESHEET</title>
+                    <link rel="icon" type="image/png" href="../logo.png" />
+                    <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=device-dpi, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"></meta>
+                </Head>
                 {/* <Navbarx /> */}
                 {/* <hr style={{ height: 5, backgroundColor: '#8c1e21' }} /> */}
                 <div className={styles.row} style={{}}>
@@ -542,9 +563,9 @@ export default class BI extends Component {
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
                                     {
                                         this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend ?
-                                        <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
-                                        :
-                                        <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล</button>
+                                            <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
+                                            :
+                                            <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล</button>
                                     }
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
@@ -753,7 +774,7 @@ export default class BI extends Component {
                                             {
                                                 this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
                                                     this.state.item_employee ?
-                                                        <i className="fa-solid fa-square-check" onClick={() => this.applyAll()} style={{ fontSize: 28, marginRight: 20, cursor: 'pointer', color: 'gray'}}></i> : <></>
+                                                        <i className="fa-solid fa-square-check" onClick={() => this.applyAll()} style={{ fontSize: 28, marginRight: 20, cursor: 'pointer', color: 'gray' }}></i> : <></>
                                                     : <></>
                                             }
                                             {
@@ -780,13 +801,13 @@ export default class BI extends Component {
                                                                     <tr key={index} style={{ borderBottomStyle: 'hidden' }}>
                                                                         <td>{item.empcode}</td>
                                                                         <td colSpan={5}>
-                                                                            <span style={{fontSize: 18}} onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span>
+                                                                            <span style={{ fontSize: 18 }} onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span>
                                                                             <div className={styles.row}>
-                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{paddingRight: 7}}>
+                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{ paddingRight: 7 }}>
                                                                                     <div>ช่วงแรก</div>
                                                                                     <div>{item.befstart}-{item.befend}</div>
                                                                                 </div>
-                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{paddingRight: 7}}>
+                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{ paddingRight: 7 }}>
                                                                                     <div>ช่วงหลัง</div>
                                                                                     <div>{item.atfstart}-{item.atfend}</div>
                                                                                 </div>
@@ -797,7 +818,7 @@ export default class BI extends Component {
                                                                             </div>
                                                                         </td>
                                                                         <td>
-                                                                            <i className="fa-solid fa-trash" style={{fontSize: 20, color: 'red', cursor: 'pointer'}} onClick={() => this.removeEmployee(index)}></i>
+                                                                            <i className="fa-solid fa-trash" style={{ fontSize: 20, color: 'red', cursor: 'pointer' }} onClick={() => this.removeEmployee(index)}></i>
                                                                         </td>
                                                                     </tr>
                                                                 </>
@@ -882,18 +903,18 @@ export default class BI extends Component {
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                         <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginBottom: 10, }}>
                                             {
-                                                this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value && 
-                                                this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
-                                                this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
-                                                this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee ?
-                                                checkitememp[0] ?
-                                                    <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} disabled={true}>ส่งข้อมูล (กรอกเวลาให้ครบ)</button>
+                                                this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value &&
+                                                    this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
+                                                    this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
+                                                    this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee ?
+                                                    checkitememp[0] ?
+                                                        <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} disabled={true}>ส่งข้อมูล (กรอกเวลาให้ครบ)</button>
+                                                        :
+                                                        <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.btn_confrim()}>ส่งข้อมูล</button>
                                                     :
-                                                    <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.btn_confrim()}>ส่งข้อมูล</button>
-                                                : 
-                                                <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} disabled={true}>ส่งข้อมูล (กรอกข้อมูลให้ครบ)</button>
+                                                    <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} disabled={true}>ส่งข้อมูล (กรอกข้อมูลให้ครบ)</button>
                                             }
-                                            
+
                                         </div>
                                         <div className="col-lg-3 col-md-3 col-sm-12"></div>
                                     </div>
