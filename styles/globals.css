@@ -1,10 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Niramit:wght@200&family=Prompt:wght@300&family=Sarabun:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200&family=Prompt:wght@300&family=Sarabun:wght@300&display=swap');
 
 
-/* @font-face {
-  font-family: 'Quark';
-  src: local('Quark'), url('../public/fonts/quark-regular.woff') format('woff');
-} */
 
 html {
   padding: 0;
@@ -19,7 +15,6 @@ a {
 
 * {
   box-sizing: border-box;
-  /* font-family: 'Quark', sans-serif; */
   font-family: 'Kanit', sans-serif;
 }
 .col-sm-12{
