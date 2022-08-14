@@ -477,9 +477,10 @@ export default class BI extends Component {
     }
     // window.onbeforeunload = function () {return false;}
     render() {
-        let checkitememp = this.state.item_employee.filter((item) => {
+        
+        let checkitememp = this.state.item_employee ? this.state.item_employee.filter((item) => {
             return item.empcode === '' || item.empname === '' || item.befstart === '' || item.befend === '' || item.atfstart === '' || item.atfend === ''
-        })
+        }) : []
         return (
             <>
                 <Head>
