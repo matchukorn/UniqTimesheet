@@ -707,11 +707,11 @@ export default class BI extends Component {
                     <Nav tabs >
                         <NavItem >
                             <input type="radio" name="slideItem" id="slide-item-1" className="slide-toggle" defaultChecked={this.state.tabindex === '1' ? true : false} />
-                            <NavLink href="#javascript" className={this.state.tabindex === '1' ? 'active' : ''}  onClick={() => this.setState({ tabindex: '1' })}><i className="fa fa-calendar-alt"></i>TIMESHEET</NavLink>
+                            <NavLink className={this.state.tabindex === '1' ? 'active' : ''}  onClick={() => this.setState({ tabindex: '1' })}><i className="fa fa-calendar-alt"></i>TIMESHEET</NavLink>
                         </NavItem>
                         <NavItem>
                             <input type="radio" name="slideItem" id="slide-item-2" className="slide-toggle" defaultChecked={this.state.tabindex === '2' ? true : false} />
-                            <NavLink href="#javascript" className={this.state.tabindex === '2' ? 'active' : ''} onClick={() => this.setState({ tabindex: '2' })}><i className="fa fa-clipboard"></i>ผลงาน</NavLink>
+                            <NavLink className={this.state.tabindex === '2' ? 'active' : ''} onClick={() => this.setState({ tabindex: '2' })}><i className="fa fa-clipboard"></i>ผลงาน</NavLink>
                         </NavItem>
                     </Nav>
 

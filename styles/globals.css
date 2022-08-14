@@ -3,9 +3,7 @@
 
 @font-face {
   font-family: 'Quark';
-  src: local('Quark'), url(../public/fonts/quark-regular.woff) format('woff');
-  /* other formats include: 'woff2', 'truetype, 'opentype',
-                            'embedded-opentype', and 'svg' */
+  src: local('Quark'), url('../public/fonts/quark-regular.woff') format('woff');
 }
 
 html {
