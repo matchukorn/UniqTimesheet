@@ -2,6 +2,7 @@ import React, { Component , Fragment } from 'react';
 import styles from '../../styles/main.module.css';
 import Navbarx from '../nav';
 import Link from 'next/link';
+import logo from '../../public/logouniq.png';
 import Head from 'next/head';
 import { Modal } from 'react-bootstrap-v5';
 import Service from '../api/Service';
@@ -692,7 +693,7 @@ export default class BI extends Component {
                     <div className="page-header">
                         <div className="title-page">
                             <div>
-                                <img src="../logo.png"></img>
+                                <Image src={logo} width={45} height={50} alt="logo"></Image>
                             </div>
                             <div>
                                 <h2>บันทึกการทำงาน</h2>
