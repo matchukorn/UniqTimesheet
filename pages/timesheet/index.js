@@ -480,10 +480,9 @@ export default class BI extends Component {
     }
     // window.onbeforeunload = function () {return false;}
     render() {
-        
-        let checkitememp = this.state.item_employee ? this.state.item_employee.filter((item) => {
+        let checkitememp = this.state.item_employee.filter((item) => {
             return item.empcode === '' || item.empname === '' || item.befstart === '' || item.befend === '' || item.atfstart === '' || item.atfend === ''
-        }) : []
+        })
         return (
             <>
                 <Head>
@@ -728,14 +727,14 @@ export default class BI extends Component {
                                                         <h5>รหัสพนักงาน : {this.state.EmployeeCode}</h5>
                                                         <h5>ชื่อ - สกุล : <Label> {this.state.EmployeeDisplayName}</Label></h5>
                                                         </CardHeader>
-                                                        <CardBody>
+                                                        <CardBody className="e-form">
                                                             <Form className="theme-form">
                                                             <FormGroup>
-                                                                <Label className="col-form-label pt-0" >วันที่ <span className="text-danger">*</span></Label>
+                                                                <Label className="col-form-label pt-0 pb-0" >วันที่ <span className="text-danger">*</span></Label>
                                                                 <Input className="form-control" type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })}  />
                                                             </FormGroup>
                                                             <FormGroup>
-                                                                <Label htmlFor="exampleInputPassword1">โครงการ <span className="text-danger">*</span></Label>
+                                                                <Label className="col-form-label pt-0 pb-0" >โครงการ <span className="text-danger">*</span></Label>
                                                                 <Select 
                                                                     options={this.state.optionprojectname}
                                                                     value={this.state.txt_projectnamevalue}
@@ -744,7 +743,7 @@ export default class BI extends Component {
                                                                 />
                                                             </FormGroup>
                                                             <FormGroup>
-                                                                <Label htmlFor="exampleInputPassword1">ช่วง <span className="text-danger">*</span></Label>
+                                                                <Label className="col-form-label pt-0 pb-0" >ช่วง <span className="text-danger">*</span></Label>
                                                                 <Select
                                                                     options={this.state.optionzone}
                                                                     value={this.state.txt_zonevalue}
@@ -753,7 +752,7 @@ export default class BI extends Component {
                                                                 />
                                                             </FormGroup>
                                                             <FormGroup>
-                                                                <Label htmlFor="exampleInputPassword1">กิจกรรม <span className="text-danger">*</span></Label>
+                                                                <Label className="col-form-label pt-0 pb-0" >กิจกรรม <span className="text-danger">*</span></Label>
                                                                 <Select
                                                                     options={this.state.optionactivity}
                                                                     value={this.state.txt_activityvalue}
@@ -762,7 +761,7 @@ export default class BI extends Component {
                                                                 />
                                                             </FormGroup>
                                                             <FormGroup>
-                                                                <Label htmlFor="exampleInputPassword1">พื้นที่งาน <span className="text-danger">*</span></Label>
+                                                                <Label className="col-form-label pt-0 pb-0" >พื้นที่งาน <span className="text-danger">*</span></Label>
                                                                 <Select
                                                                     options={this.state.optionlocation}
                                                                     value={this.state.txt_locationvalue}
@@ -798,26 +797,26 @@ export default class BI extends Component {
                                                                                             return (
                                                                                                 <>
                                                                                                     <tr key={index} style={{ borderBottomStyle: 'hidden' }}>
-                                                                                                        <td>{item.empcode}</td>
+                                                                                                        <td><p>{item.empcode}</p></td>
                                                                                                         <td >
-                                                                                                            <span style={{ fontSize: 18 }} onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span>
+                                                                                                            <a onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</a>
                                                                                                             <div className={styles.row}>
-                                                                                                                <div className="col-lg-4 col-md-4 col-sm-12" style={{ paddingRight: 7 }}>
-                                                                                                                    <div>ช่วงแรก</div>
-                                                                                                                    <div>{item.befstart}-{item.befend}</div>
+                                                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{ paddingRight: 7 }}>
+                                                                                                                    <div><p>ช่วงแรก</p></div>
+                                                                                                                    <div><small>{item.befstart}-{item.befend}</small></div>
                                                                                                                 </div>
-                                                                                                                <div className="col-lg-4 col-md-4 col-sm-12" style={{ paddingRight: 7 }}>
-                                                                                                                    <div>ช่วงหลัง</div>
-                                                                                                                    <div>{item.atfstart}-{item.atfend}</div>
+                                                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{ paddingRight: 7 }}>
+                                                                                                                    <div><p>ช่วงหลัง</p></div>
+                                                                                                                    <div><small>{item.atfstart}-{item.atfend}</small></div>
                                                                                                                 </div>
-                                                                                                                <div className="col-lg-4 col-md-4 col-sm-12">
-                                                                                                                    <div>โอที</div>
-                                                                                                                    <div>{item.otstart}-{item.otend}</div>
+                                                                                                                <div className="col-lg-4 col-md-4 col-sm-4">
+                                                                                                                    <div><p>โอที</p></div>
+                                                                                                                    <div><small>{item.otstart}-{item.otend}</small></div>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                         </td>
                                                                                                         <td align="center">
-                                                                                                            <i className="fa-solid fa-trash" style={{ fontSize: 20, color: 'red', cursor: 'pointer' }} onClick={() => this.removeEmployee(index)}></i>
+                                                                                                            <i className="fa-solid fa-trash" style={{ fontSize: 14, color: 'red', cursor: 'pointer' }} onClick={() => this.removeEmployee(index)}></i>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </>
@@ -864,14 +863,14 @@ export default class BI extends Component {
                                             <Row>
                                                 <Col sm="12">
                                                     <Card>
-                                                        <CardBody>
+                                                        <CardBody className="e-form">
                                                             <Form className="theme-form">
                                                             <FormGroup>
-                                                                <Label className="col-form-label pt-0" >เป้าหมาย <span className="text-danger">*</span></Label>
+                                                                <Label className="col-form-label pt-0 pb-0" >เป้าหมาย <span className="text-danger">*</span></Label>
                                                                 <Input className="form-control" type="text" value={this.state.jobtargetvalue + ' ' + this.state.jobtargetlabel} disabled={true}  />
                                                             </FormGroup>
                                                             <FormGroup>
-                                                                <Label className="col-form-label pt-0" >ทำได้จริง <span className="text-danger">*</span></Label><br></br>
+                                                                <Label className="col-form-label pt-0 pb-0" >ทำได้จริง <span className="text-danger">*</span></Label><br></br>
                                                                 <Input className="form-control d-inline " type="text" value={this.state.txt_actual} onChange={(e) => this.setState({ txt_actual: e.target.value.replace(/[^0-9]/g, '') })} style={{ width: '65%' }}  /> <Label>{this.state.jobtargetlabel}</Label>
                                                             </FormGroup>
                                                             <FormGroup>
