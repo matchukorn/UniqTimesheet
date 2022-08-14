@@ -42,6 +42,7 @@ export default class BI extends Component {
             tabindex: '1',
             txt_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate())).slice(-2),
             min_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate() - 1)).slice(-2),
+            max_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate())).slice(-2),
             optionprojectname: [],
             txt_projectnamevalue: '',
             txt_projectlabel: '',
@@ -75,6 +76,7 @@ export default class BI extends Component {
             activitycode: '',
             CostCenterCode: '',
             JobCode: '',
+            checkitemall: false,
         }
     }
     componentDidMount() {
@@ -389,9 +391,28 @@ export default class BI extends Component {
             }
         })
     }
+    removeProgress = (key) => {
+        let { itemprogress } = this.state;
+        Swal.fire({
+            title: 'คุณต้องการลบงานนี้ออกหรือไม่ ?',
+            text: "",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                itemprogress.splice(key, 1)
+                this.setState({ itemprogress });
+            }
+        })
+    }
     applyAll = () => {
         let { item_employee } = this.state;
         try {
+            this.setState({checkitemall: true});
             if (item_employee[0].befstart && item_employee[0].befend) {
                 for (let x = 0; x < item_employee.length; x++) {
                     if (item_employee[x].useredit === '0') {
@@ -732,7 +753,7 @@ export default class BI extends Component {
                                                             <Form className="theme-form">
                                                             <FormGroup>
                                                                 <Label className="col-form-label pt-0 pb-0" >วันที่ <span className="text-danger">*</span></Label>
-                                                                <Input className="form-control" type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })}  />
+                                                                <Input className="form-control" type="date" min={this.state.min_date} max={this.state.max_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })}  />
                                                             </FormGroup>
                                                             <FormGroup>
                                                                 <Label className="col-form-label pt-0 pb-0" >โครงการ <span className="text-danger">*</span></Label>
@@ -775,10 +796,17 @@ export default class BI extends Component {
                                                                  {
                                                                     this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
                                                                         this.state.item_employee ?
-                                                                            <div > <Input id="checkbox3" type="checkbox" checked/> <Label for="checkbox3"  onClick={() => this.applyAll()} >&nbsp; ใช้เวลาด้วยกันทั้งหมด</Label> </div> : <></>
+                                                                            <>
+                                                                                {
+                                                                                    this.state.checkitemall ?
+                                                                                    <div onClick={() => this.applyAll()}><i className="fa-solid fa-square-check" style={{color: 'green'}}></i> ใช้เวลาด้วยกันทั้งหมด</div>
+                                                                                    :
+                                                                                    <div onClick={() => this.applyAll()}><i className="fa-solid fa-square" style={{color: 'green'}}></i> ใช้เวลาด้วยกันทั้งหมด</div>
+                                                                                } 
+                                                                            </>
+                                                                            : <></>
                                                                         : <></>
                                                                 }
-
                                                                 <div className="table-responsive">
                                                                     <Table bordered>
                                                                         <thead>
@@ -877,13 +905,14 @@ export default class BI extends Component {
                                                             <FormGroup>
                                                                 <h6 >รายละเอียดงาน/อื่นๆ </h6>
                                                                 <div className="table-responsive">
-                                                                    <Table bordered>
+                                                                    <Table bordered style={{fontSize: 11}}>
                                                                         <thead>
                                                                             <tr>
                                                                                 <th>ลำดับ</th>
                                                                                 <th>รายละเอียด</th>
                                                                                 <th>ปริมาณ</th>
                                                                                 <th>หน่วย</th>
+                                                                                <th></th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -898,6 +927,9 @@ export default class BI extends Component {
                                                                                                 <td >{item.detail}</td>
                                                                                                 <td>{item.volumn}</td>
                                                                                                 <td>{item.unit}</td>
+                                                                                                <td align="center">
+                                                                                                    <i className="fa-solid fa-trash" style={{ fontSize: 14, color: 'red', cursor: 'pointer' }} onClick={() => this.removeProgress(index)}></i>
+                                                                                                </td>
                                                                                             </tr>
                                                                                         )
                                                                                     })
