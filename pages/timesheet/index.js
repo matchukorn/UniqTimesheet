@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component , Fragment } from 'react';
 import styles from '../../styles/main.module.css';
 import Navbarx from '../nav';
 import Link from 'next/link';
@@ -8,16 +8,19 @@ import Service from '../api/Service';
 import { getCookie, setCookies } from 'cookies-next';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
+import Image from 'next/image';
+
+import { Container,Row,Col,Card,CardHeader,CardBody,CardFooter,Form,FormGroup,Label,Input,Button, Nav, NavItem, NavLink ,Table } from 'reactstrap'
+import { BothBordeds,Submit,Cancel} from "../../constant";
+
 
 const stylesselect = {
     control: base => ({
         ...base,
-        fontSize: 12,
-        width: '97%'
+        width: '100%'
     }),
     menu: base => ({
         ...base,
-        fontSize: 12,
         zIndex: 111
     })
 };
@@ -530,7 +533,7 @@ export default class BI extends Component {
                                     </div>
                                 </div>
                                 <div className={styles.row}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">OT</div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">โอที</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
                                         <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
@@ -548,13 +551,13 @@ export default class BI extends Component {
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
                                     {
                                         this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend ?
-                                            <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
+                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
                                             :
-                                            <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล</button>
+                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล</button>
                                     }
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
-                                    <button variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.showpopupinput(false, this.state.keyitememp, '', '')}>ยกเลิก</button>
+                                    <button variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupinput(false, this.state.keyitememp, '', '')}>ยกเลิก</button>
                                 </div>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                             </div>
@@ -595,14 +598,14 @@ export default class BI extends Component {
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
                                     {
                                         this.state.pop_progressdetail && this.state.pop_progressvolumn && this.state.pop_progressunit ?
-                                            <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.createItemprogress()}>สร้างรายละเอียดงาน</button>
+                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createItemprogress()}>สร้างรายละเอียดงาน</button>
                                             :
-                                            <button type="button" variant="primary" className="btn btn-success" disabled={true} style={{ width: '100%' }} >สร้างรายละเอียดงาน</button>
+                                            <button type="button" variant="primary" className="btn btn-danger" disabled={true} style={{ width: '100%' }} >สร้างรายละเอียดงาน</button>
                                     }
 
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
-                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.showpopupprogress(!this.state.popupprogress)}>ยกเลิก</button>
+                                    <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupprogress(!this.state.popupprogress)}>ยกเลิก</button>
                                 </div>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                             </div>
@@ -673,10 +676,10 @@ export default class BI extends Component {
                             <div className={styles.row} style={{ width: '100%' }}>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    <button type="button" variant="primary" className="btn btn-success" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
+                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
-                                    <button variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.showpopupcreateemployee(false)}>ยกเลิก</button>
+                                    <button variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupcreateemployee(false)}>ยกเลิก</button>
                                 </div>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                             </div>
@@ -685,252 +688,270 @@ export default class BI extends Component {
                     </Modal>
                     {/* End */}
 
-                    <div className={styles.row+' '+styles.boxres} style={{ textAlign: 'center' }}>
-                        <nav className="slidemenu">
-                            {
-                                this.state.tabindex === '1' ?
-                                    <>
-                                        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', marginTop: 35, marginBottom: 20, }}>
-                                            <div style={{ width: '50%', marginLeft: 40, marginRight: 30 }}>
-                                                <span style={{ fontWeight: 'bold', fontSize: 25 }} className="slider1">TIMESHEET</span>
-                                            </div>
-                                            <div style={{ width: '50%' }}>
-                                                <span className="slider2" style={{ fontWeight: 'bold', fontSize: 25 }} onClick={() => this.setState({ tabindex: '2' })}>PROGRESS</span>
-                                            </div>
-                                        </div>
-                                    </>
-                                    :
-                                    this.state.tabindex === '2' ?
-                                        <>
-                                            <div style={{ display: 'flex', flexDirection: 'row', width: '100%', marginTop: 35, marginBottom: 20, }}>
-                                                <div style={{ width: '50%', marginLeft: 40, marginRight: 30 }}>
-                                                    <span style={{ fontWeight: 'bold', fontSize: 25 }} className="slider2" onClick={() => this.setState({ tabindex: '1' })}>TIMESHEET</span>
-                                                </div>
-                                                <div style={{ width: '50%' }}>
-                                                    <span className="slider1" style={{ fontWeight: 'bold', fontSize: 25 }}>PROGRESS</span>
-                                                </div>
-                                            </div>
-                                        </>
-                                        : <></>
-                            }
-                            <div className="clear"></div>
-                            <div className="slider"><div className="bar"></div></div>
-                        </nav>
-                    </div>
-                    <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 10 }}>
-                        {/* <div className="col-lg-12 col-md-12 col-sm-12">
-                            <div style={{ fontWeight: 'bold', fontSize: 18 }}>Report Information</div>
-                        </div> */}
-                        <div className="col-lg-3 col-md-3 col-sm-12">
-                            <label style={{ fontSize: 15 }}>ผู้คุมงาน : {this.state.EmployeeCode} {this.state.EmployeeDisplayName}</label>
+
+                    {/* Header */}
+                    <div className="page-header">
+                        <div className="title-page">
+                            <div>
+                                <img src="../logo.png"></img>
+                            </div>
+                            <div>
+                                <h2>บันทึกการทำงาน</h2>
+                            </div>
                         </div>
                     </div>
+
+                    <Container fluid={true}>
+
+                    {/* Menu Tabs */}
+                    <Nav tabs >
+                        <NavItem >
+                            <input type="radio" name="slideItem" id="slide-item-1" className="slide-toggle" defaultChecked={this.state.tabindex === '1' ? true : false} />
+                            <NavLink href="#javascript" className={this.state.tabindex === '1' ? 'active' : ''}  onClick={() => this.setState({ tabindex: '1' })}><i className="fa fa-calendar-alt"></i>TIMESHEET</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <input type="radio" name="slideItem" id="slide-item-2" className="slide-toggle" defaultChecked={this.state.tabindex === '2' ? true : false} />
+                            <NavLink href="#javascript" className={this.state.tabindex === '2' ? 'active' : ''} onClick={() => this.setState({ tabindex: '2' })}><i className="fa fa-clipboard"></i>ผลงาน</NavLink>
+                        </NavItem>
+                    </Nav>
 
                     {
                         this.state.tabindex === '1' ?
                             <>
-                                <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20, fontSize: 15 }}>
-                                    {/* <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <div style={{ fontWeight: 'bold' }}><span style={{ fontWeight: 'bold' }}>Daily Timesheet Report (1)</span></div>
-                                    </div> */}
-                                    <div className="col-lg-3 col-md-3 col-sm-12">
-                                        <label>*วันที่</label>
-                                        <input type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })} className="form-control" style={{ width: '97%', fontSize: 13 }} />
-                                    </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>*ชื่อโครงการ</label>
-                                        <Select
-                                            options={this.state.optionprojectname}
-                                            value={this.state.txt_projectnamevalue}
-                                            onChange={(e) => this.changeProjectname(e)}
-                                            styles={stylesselect}
-                                        />
-                                    </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>*ช่วง</label>
-                                        <Select
-                                            options={this.state.optionzone}
-                                            value={this.state.txt_zonevalue}
-                                            onChange={(e) => this.changeZone(e)}
-                                            styles={stylesselect}
-                                        />
-                                    </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>*กิจกรรม</label>
-                                        <Select
-                                            options={this.state.optionactivity}
-                                            value={this.state.txt_activityvalue}
-                                            onChange={(e) => this.changeActivity(e)}
-                                            styles={stylesselect}
-                                        />
-                                    </div>
-                                    <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                        <label>*พื้นที่งาน</label>
-                                        <Select
-                                            options={this.state.optionlocation}
-                                            value={this.state.txt_locationvalue}
-                                            onChange={(e) => this.changeLocation(e)}
-                                            styles={stylesselect}
-                                        />
-                                    </div>
-                                </div>
-                                <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <div style={{ width: '50%', float: 'left' }}><span style={{ fontWeight: 'bold' }}>ข้อมูลพนักงานรายวัน*</span></div>
-                                        <div style={{ width: '50%', float: 'right', textAlign: 'right' }}>
-                                            {
-                                                this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
-                                                    this.state.item_employee ?
-                                                        <i className="fa-solid fa-square-check" onClick={() => this.applyAll()} style={{ fontSize: 28, marginRight: 20, cursor: 'pointer', color: 'gray' }}></i> : <></>
-                                                    : <></>
-                                            }
-                                            {
-                                                this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
-                                                    <i className="fa-solid fa-circle-plus" style={{ fontSize: 30, color: 'gray', cursor: 'pointer' }} onClick={() => this.showpopupcreateemployee(true)}></i> : <></>
-                                            }
-                                        </div>
-                                    </div>
-                                    <table className="table" style={{ fontSize: 12, lineHeight: 1, width: '100%' }}>
-                                        <thead>
-                                            <tr>
-                                                <th>รหัส</th>
-                                                <th colSpan={6}>ชื่อสกุล</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {/* // */}
-                                            {
-                                                this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
-                                                    this.state.item_employee ?
-                                                        this.state.item_employee.map((item, index) => {
-                                                            return (
-                                                                <>
-                                                                    <tr key={index} style={{ borderBottomStyle: 'hidden' }}>
-                                                                        <td>{item.empcode}</td>
-                                                                        <td colSpan={5}>
-                                                                            <span style={{ fontSize: 18 }} onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span>
-                                                                            <div className={styles.row}>
-                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{ paddingRight: 7 }}>
-                                                                                    <div>ช่วงแรก</div>
-                                                                                    <div>{item.befstart}-{item.befend}</div>
-                                                                                </div>
-                                                                                <div className="col-lg-4 col-md-4 col-sm-4" style={{ paddingRight: 7 }}>
-                                                                                    <div>ช่วงหลัง</div>
-                                                                                    <div>{item.atfstart}-{item.atfend}</div>
-                                                                                </div>
-                                                                                <div className="col-lg-4 col-md-4 col-sm-4">
-                                                                                    <div>OT</div>
-                                                                                    <div>{item.otstart}-{item.otend}</div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <i className="fa-solid fa-trash" style={{ fontSize: 20, color: 'red', cursor: 'pointer' }} onClick={() => this.removeEmployee(index)}></i>
-                                                                        </td>
-                                                                    </tr>
-                                                                </>
-                                                            )
-                                                        })
-                                                        :
-                                                        <tr>
-                                                            <td colSpan={7} style={{ textAlign: 'center' }}>ไม่พบรายชื่อ</td>
-                                                        </tr>
-                                                    : <></>
-                                            }
-                                            {/* // */}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
-                                    <div className="col-lg-4 col-md-4 col-sm-4"></div>
-                                    <div className="col-lg-4 col-md-4 col-sm-12" style={{ marginBottom: 10, }}>
-                                        <label htmlFor="slide-item-2" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.setState({ tabindex: '2' })}>
-                                            ถัดไป
-                                        </label>
-                                    </div>
-                                    <div className="col-lg-4 col-md-4 col-sm-4"></div>
-                                </div>
+
+                                    <Row>
+                                        <Col sm="12" xl="12">
+                                            <Row>
+                                                <Col sm="12">
+                                                    <Card>
+                                                        <CardHeader>
+                                                        <h5>รหัสพนักงาน : {this.state.EmployeeCode}</h5>
+                                                        <h5>ชื่อ - สกุล : <Label> {this.state.EmployeeDisplayName}</Label></h5>
+                                                        </CardHeader>
+                                                        <CardBody>
+                                                            <Form className="theme-form">
+                                                            <FormGroup>
+                                                                <Label className="col-form-label pt-0" >วันที่ <span className="text-danger">*</span></Label>
+                                                                <Input className="form-control" type="date" min={this.state.min_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })}  />
+                                                            </FormGroup>
+                                                            <FormGroup>
+                                                                <Label htmlFor="exampleInputPassword1">โครงการ <span className="text-danger">*</span></Label>
+                                                                <Select 
+                                                                    options={this.state.optionprojectname}
+                                                                    value={this.state.txt_projectnamevalue}
+                                                                    onChange={(e) => this.changeProjectname(e)}
+                                                                    styles={stylesselect}
+                                                                />
+                                                            </FormGroup>
+                                                            <FormGroup>
+                                                                <Label htmlFor="exampleInputPassword1">ช่วง <span className="text-danger">*</span></Label>
+                                                                <Select
+                                                                    options={this.state.optionzone}
+                                                                    value={this.state.txt_zonevalue}
+                                                                    onChange={(e) => this.changeZone(e)}
+                                                                    styles={stylesselect}
+                                                                />
+                                                            </FormGroup>
+                                                            <FormGroup>
+                                                                <Label htmlFor="exampleInputPassword1">กิจกรรม <span className="text-danger">*</span></Label>
+                                                                <Select
+                                                                    options={this.state.optionactivity}
+                                                                    value={this.state.txt_activityvalue}
+                                                                    onChange={(e) => this.changeActivity(e)}
+                                                                    styles={stylesselect}
+                                                                />
+                                                            </FormGroup>
+                                                            <FormGroup>
+                                                                <Label htmlFor="exampleInputPassword1">พื้นที่งาน <span className="text-danger">*</span></Label>
+                                                                <Select
+                                                                    options={this.state.optionlocation}
+                                                                    value={this.state.txt_locationvalue}
+                                                                    onChange={(e) => this.changeLocation(e)}
+                                                                    styles={stylesselect}
+                                                                />
+                                                            </FormGroup>
+                                                            <FormGroup>
+                                                                <h6 >ข้อมูลพนักงานรายวัน <span className="text-danger">*</span></h6>
+                                                                 {
+                                                                    this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
+                                                                        this.state.item_employee ?
+                                                                            <div > <Input id="checkbox3" type="checkbox" checked/> <Label for="checkbox3"  onClick={() => this.applyAll()} >&nbsp; ใช้เวลาด้วยกันทั้งหมด</Label> </div> : <></>
+                                                                        : <></>
+                                                                }
+
+                                                                <div className="table-responsive">
+                                                                    <Table bordered>
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th scope="col">รหัส</th>
+                                                                                <th scope="col">ชื่อสกุล</th>
+                                                                                <th scope="col"></th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+
+                                                                            {/* // */}
+                                                                            {
+                                                                                this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
+                                                                                    this.state.item_employee ?
+                                                                                        this.state.item_employee.map((item, index) => {
+                                                                                            return (
+                                                                                                <>
+                                                                                                    <tr key={index} style={{ borderBottomStyle: 'hidden' }}>
+                                                                                                        <td>{item.empcode}</td>
+                                                                                                        <td >
+                                                                                                            <span style={{ fontSize: 18 }} onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</span>
+                                                                                                            <div className={styles.row}>
+                                                                                                                <div className="col-lg-4 col-md-4 col-sm-12" style={{ paddingRight: 7 }}>
+                                                                                                                    <div>ช่วงแรก</div>
+                                                                                                                    <div>{item.befstart}-{item.befend}</div>
+                                                                                                                </div>
+                                                                                                                <div className="col-lg-4 col-md-4 col-sm-12" style={{ paddingRight: 7 }}>
+                                                                                                                    <div>ช่วงหลัง</div>
+                                                                                                                    <div>{item.atfstart}-{item.atfend}</div>
+                                                                                                                </div>
+                                                                                                                <div className="col-lg-4 col-md-4 col-sm-12">
+                                                                                                                    <div>โอที</div>
+                                                                                                                    <div>{item.otstart}-{item.otend}</div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </td>
+                                                                                                        <td align="center">
+                                                                                                            <i className="fa-solid fa-trash" style={{ fontSize: 20, color: 'red', cursor: 'pointer' }} onClick={() => this.removeEmployee(index)}></i>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                </>
+                                                                                            )
+                                                                                        })
+                                                                                        :
+                                                                                        <tr>
+                                                                                            <td colSpan={7} style={{ textAlign: 'center' }}>ไม่พบรายชื่อ</td>
+                                                                                        </tr>
+                                                                                    : <></>
+                                                                            }
+                                                                            {/* // */}
+                                                                            <tr>
+                                                                                <td colSpan="3" align="center" >
+                                                                                {
+                                                                                    this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
+                                                                                        <Button  className="btn-pill btn-air-primary"   outline color="primary" size="sm" onClick={() => this.showpopupcreateemployee(true)}><i className="fa fa-plus"></i> เพิ่มพนักงานรายวัน </Button> :  <><Label >ไม่พบรายชื่อ</Label></>
+                                                                                }
+
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </Table>
+                                                                </div>
+                                                            </FormGroup>
+
+                                                            </Form>
+                                                        </CardBody>
+                                                        <CardFooter align="right">
+                                                            <Button color="danger" className="col-sm-12" onClick={() => this.setState({ tabindex: '2' })} >ถัดไป</Button>
+                                                        </CardFooter>
+                                                    </Card>
+
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    </Row>
                             </>
                             :
                             this.state.tabindex === '2' ?
                                 <>
-                                    <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20, fontSize: 15 }}>
-                                        <div className="col-lg-12 col-md-12 col-sm-12">
-                                            <div style={{ fontWeight: 'bold' }}><span style={{ fontWeight: 'bold' }}>Daily Timesheet Report (2)</span></div>
-                                        </div>
-                                        <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginTop: 5 }}>
-                                            <label>เป้าหมาย</label>
-                                            <input type="text" value={this.state.jobtargetvalue + ' ' + this.state.jobtargetlabel} disabled={true} className="form-control" style={{ width: '97%' }} />
-                                        </div>
-                                        <div className="col-lg-3 col-md-3 col-sm-8" style={{ marginTop: 5 }}>
-                                            <label>ทำได้จริง</label>
-                                            <div>
-                                                <input type="text" className={styles.inpuboxs} value={this.state.txt_actual} onChange={(e) => this.setState({ txt_actual: e.target.value.replace(/[^0-9]/g, '') })} /> {this.state.jobtargetlabel}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
-                                        <div className="col-lg-12 col-md-12 col-sm-12">
-                                            <div style={{ width: '50%', float: 'left' }}><span style={{ fontWeight: 'bold' }}>รายละเอียดงาน/อื่นๆ</span></div>
-                                            <div style={{ width: '50%', float: 'right', textAlign: 'right' }}>
-                                                <i className="fa-solid fa-circle-plus" style={{ fontSize: 30, color: 'gray' }} onClick={() => this.showpopupprogress(true)}></i>
-                                            </div>
-                                        </div>
-                                        <table className="table table-striped" style={{ fontSize: 12 }}>
-                                            <thead>
-                                                <tr>
-                                                    <th>ลำดับ</th>
-                                                    <th colSpan={3}>รายละเอียด</th>
-                                                    <th>ปริมาณ</th>
-                                                    <th>หน่วย</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {/* // */}
-                                                {
-                                                    this.state.itemprogress ?
-                                                        this.state.itemprogress.map((item, index) => {
-                                                            return (
-                                                                <tr style={{ borderBottomStyle: 'hidden' }} key={index}>
-                                                                    <td>1</td>
-                                                                    <td colSpan={3}>{item.detail}</td>
-                                                                    <td>{item.volumn}</td>
-                                                                    <td>{item.unit}</td>
-                                                                </tr>
-                                                            )
-                                                        })
-                                                        :
-                                                        <tr>
-                                                            <td colSpan={6}>-</td>
-                                                        </tr>
-                                                }
-                                                {/* // */}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div className={styles.row} style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}>
-                                        <div className="col-lg-3 col-md-3 col-sm-12"></div>
-                                        <div className="col-lg-3 col-md-3 col-sm-12" style={{ marginBottom: 10, }}>
-                                            {
-                                                this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value &&
-                                                    this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
-                                                    this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
-                                                    this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee ?
-                                                    checkitememp[0] ?
-                                                        <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} disabled={true}>ส่งข้อมูล (กรอกเวลาให้ครบ)</button>
-                                                        :
-                                                        <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} onClick={() => this.btn_confrim()}>ส่งข้อมูล</button>
-                                                    :
-                                                    <button type="button" className="btn btn-outline-success" style={{ width: '100%' }} disabled={true}>ส่งข้อมูล (กรอกข้อมูลให้ครบ)</button>
-                                            }
+                                    <Row>
+                                        <Col sm="12" xl="12">
+                                            <Row>
+                                                <Col sm="12">
+                                                    <Card>
+                                                        <CardBody>
+                                                            <Form className="theme-form">
+                                                            <FormGroup>
+                                                                <Label className="col-form-label pt-0" >เป้าหมาย <span className="text-danger">*</span></Label>
+                                                                <Input className="form-control" type="text" value={this.state.jobtargetvalue + ' ' + this.state.jobtargetlabel} disabled={true}  />
+                                                            </FormGroup>
+                                                            <FormGroup>
+                                                                <Label className="col-form-label pt-0" >ทำได้จริง <span className="text-danger">*</span></Label><br></br>
+                                                                <Input className="form-control d-inline " type="text" value={this.state.txt_actual} onChange={(e) => this.setState({ txt_actual: e.target.value.replace(/[^0-9]/g, '') })} style={{ width: '65%' }}  /> <Label>{this.state.jobtargetlabel}</Label>
+                                                            </FormGroup>
+                                                            <FormGroup>
+                                                                <h6 >รายละเอียดงาน/อื่นๆ </h6>
+                                                                <div className="table-responsive">
+                                                                    <Table bordered>
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>ลำดับ</th>
+                                                                                <th>รายละเอียด</th>
+                                                                                <th>ปริมาณ</th>
+                                                                                <th>หน่วย</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
 
-                                        </div>
-                                        <div className="col-lg-3 col-md-3 col-sm-12"></div>
-                                    </div>
+                                                                            {/* // */}
+                                                                            {
+                                                                                this.state.itemprogress ?
+                                                                                    this.state.itemprogress.map((item, index) => {
+                                                                                        return (
+                                                                                            <tr style={{ borderBottomStyle: 'hidden' }} key={index}>
+                                                                                                <td>1</td>
+                                                                                                <td >{item.detail}</td>
+                                                                                                <td>{item.volumn}</td>
+                                                                                                <td>{item.unit}</td>
+                                                                                            </tr>
+                                                                                        )
+                                                                                    })
+                                                                                    :
+                                                                                    <tr>
+                                                                                        <td colSpan={6}>-</td>
+                                                                                    </tr>
+                                                                            }
+                                                                            {/* // */}
+
+                                                                            <tr>
+                                                                                <td colSpan="4" align="center" >
+                                                                                {
+                                                                                    this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
+                                                                                        <Button  className="btn-pill btn-air-primary"   outline color="primary" size="sm"  onClick={() => this.showpopupprogress(true)} ><i className="fa fa-plus"></i> เพิ่มรายละเอียด </Button> :  <><Label >ไม่พบข้อมูล</Label></>
+                                                                                }
+
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </Table>
+                                                                </div>
+                                                            </FormGroup>
+
+                                                            </Form>
+                                                        </CardBody>
+                                                        <CardFooter align="right">
+                                                        {
+                                                            this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value &&
+                                                                this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
+                                                                this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
+                                                                this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee ?
+                                                                checkitememp[0] ?
+                                                                    <Button color="light" className="col-sm-12" disabled={true}>ส่งข้อมูล (กรอกเวลาให้ครบ)</Button>
+                                                                    :
+                                                                    <Button color="danger" className="col-sm-12"  onClick={() => this.btn_confrim()} >ส่งข้อมูล</Button>
+                                                                :
+                                                                <Button color="danger" className="col-sm-12"  disabled={true}>ส่งข้อมูล (กรอกข้อมูลให้ครบ)</Button>
+                                                        }
+
+                                                            
+                                                        </CardFooter>
+                                                    </Card>
+
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    </Row>
+
                                 </>
                                 :
                                 <></>
                     }
+                            </Container>
                 </div>
                 <br /><br /><br />
             </>

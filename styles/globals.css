@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Niramit:wght@200&family=Prompt:wght@300&family=Sarabun:wght@300&display=swap');
 
+
+@font-face {
+  font-family: 'Quark';
+  src: local('Quark'), url(../public/fonts/quark-regular.woff) format('woff');
+  /* other formats include: 'woff2', 'truetype, 'opentype',
+                            'embedded-opentype', and 'svg' */
+}
+
 html {
   padding: 0;
   margin: 0;
@@ -13,7 +21,7 @@ a {
 
 * {
   box-sizing: border-box;
-  font-family: 'Prompt', sans-serif;
+  font-family: 'Quark', sans-serif;
 }
 .col-sm-12{
   width: 100%;
@@ -33,19 +41,69 @@ a {
 .clear{
   clear: both;
 }
+.slide-toggle{
+  display: none;
+}
+.slidemenu{
+  font-family: arial, sans-serif;
+  max-width: 100%;
+  margin: 13px auto;
+  overflow: hidden;
+}
+.slidemenu label{
+  width: 50%;
+  text-align: center;
+  display: block;
+  float: left;
+  color: rgb(55, 54, 54);
+  opacity: 0.2;
 
-.slider1{
+}
+.slidemenu label:hover{
+  cursor: pointer;
+  color: rgb(55, 54, 54);
+}
+.slidemenu label span{
+  display: block;
+  padding: 5px;    
+}
+.slidemenu label .icon{
+  font-size: 20px;
+  border: solid 2px rgb(33, 171, 245);
+  text-align: center;
+  height: 10px;
+  width: 50%;
+  display: block;
+  margin: 0 auto;
+  line-height: 50px;
+  border-radius: 50%;
+}
+/*Bar Style*/
+.slider{
   width: 100%;
-  font-weight: bold;
-  /* border-top: 5px solid rgb(157, 35, 60); */
-  /* border-bottom: 5px solid rgb(157, 35, 60); */
+  height: 5px;
+  display: block;
+  background: rgb(165, 158, 158);
+  margin-top: 10px;
   border-radius: 5px;
 }
-.slider2{
-  width: 100%;
-  opacity: 0.1;
+.slider .bar{
+  width: 50%;
+  height: 5px;
+  background: rgb(33, 171, 245);
   border-radius: 5px;
 }
-
+/*Animations*/
+.slidemenu label, .slider .bar {
+  transition: all 200ms ease-in-out;
+  -webkit-transition: all 200ms ease-in-out;
+  -moz-transition: all 200ms ease-in-out;
+}
+/*Toggle*/
+.slidemenu .slide-toggle:checked + label{
+  opacity: 1;
+}
+.slidemenu #slide-item-1:checked ~ .slider .bar{ margin-left: 0; }
+.slidemenu #slide-item-2:checked ~ .slider .bar{ margin-left: 50%; }
 
 
