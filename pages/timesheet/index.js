@@ -357,7 +357,7 @@ export default class BI extends Component {
                 let arr = [{
                     empcode: this.state.pop_empcode.value,
                     empname: this.state.pop_fullname,
-                    empname: 'D',
+                    emptype: 'D',
                     befstart: this.state.pop_befstart,
                     befend: this.state.pop_befend,
                     atfstart: this.state.pop_aftstart,
