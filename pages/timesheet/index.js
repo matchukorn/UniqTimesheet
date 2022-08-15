@@ -526,13 +526,29 @@ export default class BI extends Component {
                         centered
                     >
                         <Modal.Header>
-                            <div>กำหนดเวลาทำงาน</div>
-                            <div style={{ fontSize: 10 }}>{this.state.keyempname}</div>
+                            <div><strong>กำหนดเวลาทำงาน</strong></div>
+                            <div><strong>{this.state.keyempname}</strong></div>
                         </Modal.Header>
                         <Modal.Body>
                             <div className={styles.row} style={{ fontSize: 15 }}>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">ช่วงแรก</div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <Label className="checkbox">
+                                        <Input type="checkbox" onChange={() => this.applyAll()} />
+                                        <span className="checkmark"></span> <strong>โอที</strong> (ก่อนเริ่มงาน)
+                                    </Label>
+                                    </div>
+                                    <div className="d-none" style={{ width: '50%', float: 'left' }}>
+                                        <label>เริ่มงาน</label>
+                                        <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
+                                    </div>
+                                    <div className="d-none" style={{ width: '50%', float: 'right' }}>
+                                        <label>ออกงาน</label>
+                                        <input type="time" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงแรก</strong></div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
                                         <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
@@ -543,7 +559,7 @@ export default class BI extends Component {
                                     </div>
                                 </div>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">ช่วงหลัง</div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงหลัง</strong></div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
                                         <input type="time" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
@@ -554,7 +570,7 @@ export default class BI extends Component {
                                     </div>
                                 </div>
                                 <div className={styles.row}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">โอที</div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>โอที</strong> (หลังเลิกงาน)</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
                                         <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
@@ -595,11 +611,11 @@ export default class BI extends Component {
                         centered
                     >
                         <Modal.Header>
-                            <Modal.Title>เพิ่มรายละเอียดงาน</Modal.Title>
+                            <div><strong>เพิ่มรายละเอียดงาน</strong></div>
                         </Modal.Header>
                         <Modal.Body>
                             <div className={styles.row} style={{ fontSize: 15 }}>
-                                <div className="col-lg-6 col-md-6 col-sm-12">
+                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
                                     <label>รายละเอียด</label>
                                     <input type="text" className="form-control" value={this.state.pop_progressdetail} onChange={(e) => this.setState({ pop_progressdetail: e.target.value })} />
                                 </div>
@@ -643,13 +659,13 @@ export default class BI extends Component {
                         centered
                     >
                         <Modal.Header>
-                            <div>กำหนดเวลาทำงาน</div>
+                            <div><strong>กำหนดเวลาทำงาน</strong></div>
                         </Modal.Header>
                         <Modal.Body>
                             <div className={styles.row} style={{ fontSize: 15 }}>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <label>พนักงาน</label>
+                                        <label><strong>พนักงาน</strong></label>
                                         <Select
                                             options={this.state.optionempname}
                                             value={this.state.pop_empcode}
@@ -659,7 +675,24 @@ export default class BI extends Component {
                                     </div>
                                 </div>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">ช่วงแรก</div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <Label className="checkbox">
+                                        <Input type="checkbox" onChange={() => this.applyAll()} />
+                                        <span className="checkmark"></span> <strong>โอที</strong> (ก่อนเริ่มงาน)
+                                    </Label>
+                                    </div>
+                                    <div className="d-none" style={{ width: '50%', float: 'left' }}>
+                                        <label>เริ่มงาน</label>
+                                        <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
+                                    </div>
+                                    <div className="d-none" style={{ width: '50%', float: 'right' }}>
+                                        <label>ออกงาน</label>
+                                        <input type="time" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
+                                    </div>
+                                </div>
+
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงแรก</strong></div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
                                         <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
@@ -670,7 +703,7 @@ export default class BI extends Component {
                                     </div>
                                 </div>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">ช่วงหลัง</div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงหลัง</strong></div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
                                         <input type="time" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
@@ -681,7 +714,7 @@ export default class BI extends Component {
                                     </div>
                                 </div>
                                 <div className={styles.row}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">OT</div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>โอที</strong> (หลังเลิกงาน)</div>
                                     <div style={{ width: '50%', float: 'left' }}>
                                         <label>เริ่มงาน</label>
                                         <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
@@ -716,9 +749,9 @@ export default class BI extends Component {
                             <div>
                                 <Image src={logo} width={45} height={50} alt="logo"></Image>
                             </div>
-                            <div>
+                            {/* <div>
                                 <h2>บันทึกการทำงาน</h2>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
@@ -791,17 +824,25 @@ export default class BI extends Component {
                                                                     styles={stylesselect}
                                                                 />
                                                             </FormGroup>
-                                                            <FormGroup>
+                                                            <FormGroup className="mt-3">
                                                                 <h6 >ข้อมูลพนักงานรายวัน <span className="text-danger">*</span></h6>
+                                                                    
                                                                  {
                                                                     this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
                                                                         this.state.item_employee ?
                                                                             <>
                                                                                 {
                                                                                     this.state.checkitemall ?
-                                                                                    <div onClick={() => this.applyAll()}><i className="fa-solid fa-square-check" style={{color: 'green'}}></i> ใช้เวลาด้วยกันทั้งหมด</div>
+                                                                                    
+                                                                                    <Label className="checkbox">
+                                                                                        <Input type="checkbox" checked="checked" onChange={() => this.applyAll()} />
+                                                                                        <span className="checkmark"></span> ใช้เวลาด้วยกันทั้งหมด
+                                                                                    </Label>
                                                                                     :
-                                                                                    <div onClick={() => this.applyAll()}><i className="fa-solid fa-square" style={{color: 'green'}}></i> ใช้เวลาด้วยกันทั้งหมด</div>
+                                                                                    <Label className="checkbox">
+                                                                                        <Input type="checkbox" onChange={() => this.applyAll()} />
+                                                                                        <span className="checkmark"></span> ใช้เวลาด้วยกันทั้งหมด
+                                                                                    </Label>
                                                                                 } 
                                                                             </>
                                                                             : <></>
@@ -900,10 +941,10 @@ export default class BI extends Component {
                                                             </FormGroup>
                                                             <FormGroup>
                                                                 <Label className="col-form-label pt-0 pb-0" >ทำได้จริง <span className="text-danger">*</span></Label><br></br>
-                                                                <Input className="form-control d-inline " type="text" value={this.state.txt_actual} onChange={(e) => this.setState({ txt_actual: e.target.value.replace(/[^0-9]/g, '') })} style={{ width: '65%' }}  /> <Label>{this.state.jobtargetlabel}</Label>
+                                                                <Input className="form-control d-inline " type="text" value={this.state.txt_actual} onChange={(e) => this.setState({ txt_actual: e.target.value.replace(/[^0-9]/g, '') })} style={{ width: '60%' }}  /> <Label className="ml-2">{this.state.jobtargetlabel}</Label>
                                                             </FormGroup>
-                                                            <FormGroup>
-                                                                <h6 >รายละเอียดงาน/อื่นๆ </h6>
+                                                            <FormGroup className="mt-3">
+                                                                <h6  >รายละเอียดงาน/อื่นๆ </h6>
                                                                 <div className="table-responsive">
                                                                     <Table bordered style={{fontSize: 11}}>
                                                                         <thead>
