@@ -161,6 +161,7 @@ export default class Service{
     }
     savetimesheet = async (
         token, 
+        Sublocation, // H
         EmployeeCode, // H
         WorkingDate, // H
         ProjectCode, // H
@@ -185,6 +186,7 @@ export default class Service{
         let data = '';
         let formData = new FormData();
         formData.append("method", "savetimesheet");
+        formData.append("ProjectSublocationCode", Sublocation);
         formData.append("EmployeeCode", EmployeeCode);
         formData.append("WorkingDate", WorkingDate);
         formData.append("ProjectCode", ProjectCode);

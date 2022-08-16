@@ -501,6 +501,7 @@ export default class BI extends Component {
                         //////////
                         new Service().savetimesheet(
                             getCookie('token'),
+                            this.state.txt_locationvalue.code, // H
                             this.state.EmployeeCode, // H
                             this.state.txt_date, // H
                             this.state.txt_projectnamevalue.value, // H
@@ -606,18 +607,18 @@ export default class BI extends Component {
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <span onClick={() => this.trunOnotedit(!this.state.addotinputedit)}>
-                                            <i className={this.state.addotinputedit ? 'fa-solid fa-square-check squareboxcheck' : 'fa-solid fa-square squareboxuncheck'}></i> <strong>โอที</strong> (ก่อนเริ่มงาน)
+                                            <i className={this.state.addotinputedit ? 'fa-solid fa-square-check squareboxcheck' : 'fa-solid fa-square squareboxuncheck'}></i> <strong>โอที</strong> (ก่อนเริ่ม)
                                         </span>
                                     </div>
                                     {
                                         this.state.addotinputedit ?
                                             <div className={styles.row} style={{ marginBottom: 10 }}>
                                                 <div style={{ width: '50%', float: 'left' }}>
-                                                    <label>เริ่มงาน</label>
+                                                    <label>เริ่ม</label>
                                                     <input type="time" placeholder='06:00' className="form-control" style={{ width: '97%' }} value={this.state.popupotBeforestart} onChange={(e) => this.setState({ popupotBeforestart: e.target.value })}/>
                                                 </div>
                                                 <div style={{ width: '50%', float: 'right' }}>
-                                                    <label>ออกงาน</label>
+                                                    <label>สิ้นสุด</label>
                                                     <input type="time" placeholder='08:00' min={this.state.popupotBeforestart} className="form-control" value={this.state.popupotBeforeend} onChange={(e) => this.setState({ popupotBeforeend: e.target.value })}/>
                                                 </div>
                                             </div>
@@ -628,33 +629,33 @@ export default class BI extends Component {
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงแรก</strong></div>
                                     <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่มงาน</label>
+                                        <label>เริ่ม</label>
                                         <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
-                                        <label>ออกงาน</label>
+                                        <label>สิ้นสุด</label>
                                         <input type="time" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงหลัง</strong></div>
                                     <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่มงาน</label>
+                                        <label>เริ่ม</label>
                                         <input type="time" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
-                                        <label>ออกงาน</label>
+                                        <label>สิ้นสุด</label>
                                         <input type="time" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row}>
                                     <div className="col-lg-12 col-md-12 col-sm-12"><strong>โอที</strong> (หลังเลิกงาน)</div>
                                     <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่มงาน</label>
+                                        <label>เริ่ม</label>
                                         <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
-                                        <label>ออกงาน</label>
+                                        <label>สิ้นสุด</label>
                                         <input type="time" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
                                     </div>
                                 </div>
@@ -835,18 +836,18 @@ export default class BI extends Component {
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <span onClick={() => this.trunOnot(!this.state.addotinput)}>
-                                            <i className={this.state.addotinput ? 'fa-solid fa-square-check squareboxcheck' : 'fa-solid fa-square squareboxuncheck'}></i> <strong>โอที</strong> (ก่อนเริ่มงาน)
+                                            <i className={this.state.addotinput ? 'fa-solid fa-square-check squareboxcheck' : 'fa-solid fa-square squareboxuncheck'}></i> <strong>โอที</strong> (ก่อนเริ่ม)
                                         </span>
                                     </div>
                                     {
                                         this.state.addotinput ?
                                             <div className={styles.row} style={{ marginBottom: 10 }}>
                                                 <div style={{ width: '50%', float: 'left' }}>
-                                                    <label>เริ่มงาน</label>
+                                                    <label>เริ่ม</label>
                                                     <input type="time" placeholder='06:00' className="form-control" style={{ width: '97%' }} value={this.state.popupotBeforestart} onChange={(e) => this.setState({ popupotBeforestart: e.target.value })}/>
                                                 </div>
                                                 <div style={{ width: '50%', float: 'right' }}>
-                                                    <label>ออกงาน</label>
+                                                    <label>สิ้นสุด</label>
                                                     <input type="time" placeholder='08:00' min={this.state.popupotBeforestart} className="form-control" value={this.state.popupotBeforeend} onChange={(e) => this.setState({ popupotBeforeend: e.target.value })}/>
                                                 </div>
                                             </div>
@@ -858,33 +859,33 @@ export default class BI extends Component {
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงแรก</strong></div>
                                     <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่มงาน</label>
+                                        <label>เริ่ม</label>
                                         <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
-                                        <label>ออกงาน</label>
+                                        <label>สิ้นสุด</label>
                                         <input type="time" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงหลัง</strong></div>
                                     <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่มงาน</label>
+                                        <label>เริ่ม</label>
                                         <input type="time" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
-                                        <label>ออกงาน</label>
+                                        <label>สิ้นสุด</label>
                                         <input type="time" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className={styles.row}>
                                     <div className="col-lg-12 col-md-12 col-sm-12"><strong>โอที</strong> (หลังเลิกงาน)</div>
                                     <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่มงาน</label>
+                                        <label>เริ่ม</label>
                                         <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
                                     </div>
                                     <div style={{ width: '50%', float: 'right' }}>
-                                        <label>ออกงาน</label>
+                                        <label>สิ้นสุด</label>
                                         <input type="time" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
                                     </div>
                                 </div>
