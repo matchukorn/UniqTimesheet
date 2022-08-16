@@ -24,7 +24,17 @@ a {
   touch-action: manipulation;
 }
 
-
+.squareboxuncheck{
+  font-size: 18px;
+  color: white;
+  border: 2px solid #bd2027;
+  margin-bottom: 9px;
+}
+.squareboxcheck{
+  font-size: 23px;
+  color: #bd2027;
+  margin-bottom: 9px;
+}
 
 
 

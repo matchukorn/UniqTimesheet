@@ -201,6 +201,8 @@ export default class Service{
             formData.append("Em_EmployeeTypeCode[]", item.emptype);
             formData.append("Em_EmployeeCode[]", item.empcode);
             formData.append("Em_EmployeeDisplayName[]", item.empname);
+            formData.append("Em_StartTimeOTPart1[]", item.befotstart);
+            formData.append("Em_EndTimeOTPart1[]", item.befotend);
             formData.append("Em_StartTimePart1[]", item.befstart);
             formData.append("Em_EndTimePart1[]", item.befend);
             formData.append("Em_StartTimePart2[]", item.atfstart);

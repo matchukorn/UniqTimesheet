@@ -67,11 +67,10 @@ export default class Login extends Component {
       <>
         <Head>
           <title>ลงชื่อเข้าใช้งาน</title>
-          {/* <link rel="icon" type="image/png" href="../logo.png" /> */}
-          <meta httpEquivv="X-UA-Compatible" content="IE=edge"></meta>
+          <link rel="icon" type="image/png" href="../logo.png" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         </Head>
-        <div className={styles.row} style={{ backgroundColor: '', height: this.state.s_heigth }}>
+        <div className={styles.row} style={{ height: this.state.s_heigth }}>
           <div className="col-lg-12 col-md-12 col-sm-12">
             <div className={styles.row} style={{ marginTop: 100 }}>
               <div className="col-lg-4 col-md-4 col-sm-12"></div>
