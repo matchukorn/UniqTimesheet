@@ -666,42 +666,47 @@ export default class BI extends Component {
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
                                     {
-                                        this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend ?
-                                            ((this.state.popupotBeforestart.length > 0) <= (this.state.popupotBeforeend.length > 0)) && 
-                                            (this.state.popupotBeforeend <= this.state.pop_befstart) && 
-                                            (this.state.pop_befstart <= this.state.pop_befend) && 
-                                            (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                            (this.state.pop_aftstart <= this.state.pop_aftend) && 
-                                            (this.state.pop_aftend <= this.state.pop_otstart) && 
-                                            (this.state.pop_otstart <= this.state.pop_otend) ? // Frist OT and Last OT
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
-                                            : 
-                                            ((this.state.popupotBeforestart.length > 0) <= (this.state.popupotBeforeend.length > 0)) && 
-                                            (this.state.popupotBeforeend <= this.state.pop_befstart) && 
-                                            (this.state.pop_befstart <= this.state.pop_befend) && 
+                                        // FL
+                                        this.state.popupotBeforestart && this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && this.state.pop_otstart && this.state.pop_otend ?
+                                            (this.state.popupotBeforeend <= this.state.pop_befstart) &&
+                                            (this.state.pop_befstart <= this.state.pop_befend) &&
                                             (this.state.pop_befend <= this.state.pop_aftstart) &&
                                             (this.state.pop_aftstart <= this.state.pop_aftend) &&
-                                            (!this.state.pop_otstart && !this.state.pop_otend) ? // Frist OT no Last OT
+                                            (this.state.pop_aftend <= this.state.pop_otstart) ?
                                                 <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
+                                                : 
+                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
                                             :
-                                            (!this.state.popupotBeforestart && !this.state.popupotBeforeend) &&
-                                            (this.state.pop_befstart <= this.state.pop_befend) && 
-                                            (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                            (this.state.pop_aftstart <= this.state.pop_aftend) &&
-                                            (this.state.pop_aftend <= this.state.pop_otstart) && 
-                                            (this.state.pop_otstart <= this.state.pop_otend) ? // Last OT no Frist OT
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
-                                            : 
-                                            (!this.state.popupotBeforestart && !this.state.popupotBeforeend) &&
-                                            (this.state.pop_befstart <= this.state.pop_befend) && 
-                                            (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                            (this.state.pop_aftstart <= this.state.pop_aftend) && 
-                                            (!this.state.pop_otstart && !this.state.pop_otend) ? // NO Last OT and Frist OT
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
-                                            : 
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูก)</button>
-                                            :
-                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ครบ)</button>
+                                            // F
+                                            this.state.popupotBeforestart && this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && !this.state.pop_otstart && !this.state.pop_otend ?
+                                                (this.state.popupotBeforeend <= this.state.pop_befstart) &&
+                                                (this.state.pop_befstart <= this.state.pop_befend) &&
+                                                (this.state.pop_befend <= this.state.pop_aftstart) &&
+                                                (this.state.pop_aftstart <= this.state.pop_aftend) ?    
+                                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
+                                                    : 
+                                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
+                                                :
+                                                // L
+                                                !this.state.popupotBeforestart && !this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && this.state.pop_otstart && this.state.pop_otend ?
+                                                    (this.state.pop_befstart <= this.state.pop_befend) &&
+                                                    (this.state.pop_befend <= this.state.pop_aftstart) &&
+                                                    (this.state.pop_aftstart <= this.state.pop_aftend) &&
+                                                    (this.state.pop_aftend <= this.state.pop_otstart) ? 
+                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
+                                                        :
+                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
+                                                    :
+                                                    // Nomal
+                                                    !this.state.popupotBeforestart && !this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && !this.state.pop_otstart && !this.state.pop_otend ?
+                                                        (this.state.pop_befstart <= this.state.pop_befend) &&
+                                                        (this.state.pop_befend <= this.state.pop_aftstart) &&
+                                                        (this.state.pop_aftstart <= this.state.pop_aftend) ? 
+                                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
+                                                            :
+                                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
+                                                        :
+                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ครบ)</button>
                                     }
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
@@ -895,44 +900,48 @@ export default class BI extends Component {
                             <div className={styles.row} style={{ width: '100%' }}>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    {
-                                        // onClick={() => this.createEmployee()}
-                                        this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend ?
-                                            ((this.state.popupotBeforestart.length > 0) <= (this.state.popupotBeforeend.length > 0)) && 
-                                            (this.state.popupotBeforeend <= this.state.pop_befstart) && 
-                                            (this.state.pop_befstart <= this.state.pop_befend) && 
-                                            (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                            (this.state.pop_aftstart <= this.state.pop_aftend) && 
-                                            (this.state.pop_aftend <= this.state.pop_otstart) && 
-                                            (this.state.pop_otstart <= this.state.pop_otend) ? // Frist OT and Last OT
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
-                                            : 
-                                            ((this.state.popupotBeforestart.length > 0) <= (this.state.popupotBeforeend.length > 0)) && 
-                                            (this.state.popupotBeforeend <= this.state.pop_befstart) && 
-                                            (this.state.pop_befstart <= this.state.pop_befend) && 
+                                {
+                                        // FL
+                                        this.state.popupotBeforestart && this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && this.state.pop_otstart && this.state.pop_otend ?
+                                            (this.state.popupotBeforeend <= this.state.pop_befstart) &&
+                                            (this.state.pop_befstart <= this.state.pop_befend) &&
                                             (this.state.pop_befend <= this.state.pop_aftstart) &&
                                             (this.state.pop_aftstart <= this.state.pop_aftend) &&
-                                            (!this.state.pop_otstart && !this.state.pop_otend) ? // Frist OT no Last OT
+                                            (this.state.pop_aftend <= this.state.pop_otstart) ?
                                                 <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
+                                                : 
+                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
                                             :
-                                            (!this.state.popupotBeforestart && !this.state.popupotBeforeend) &&
-                                            (this.state.pop_befstart <= this.state.pop_befend) && 
-                                            (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                            (this.state.pop_aftstart <= this.state.pop_aftend) &&
-                                            (this.state.pop_aftend <= this.state.pop_otstart) && 
-                                            (this.state.pop_otstart <= this.state.pop_otend) ? // Last OT no Frist OT
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
-                                            : 
-                                            (!this.state.popupotBeforestart && !this.state.popupotBeforeend) &&
-                                            (this.state.pop_befstart <= this.state.pop_befend) && 
-                                            (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                            (this.state.pop_aftstart <= this.state.pop_aftend) && 
-                                            (!this.state.pop_otstart && !this.state.pop_otend) ? // NO Last OT and Frist OT
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
-                                            : 
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูก)</button>
-                                            :
-                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ครบ)</button>
+                                            // F
+                                            this.state.popupotBeforestart && this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && !this.state.pop_otstart && !this.state.pop_otend ?
+                                                (this.state.popupotBeforeend <= this.state.pop_befstart) &&
+                                                (this.state.pop_befstart <= this.state.pop_befend) &&
+                                                (this.state.pop_befend <= this.state.pop_aftstart) &&
+                                                (this.state.pop_aftstart <= this.state.pop_aftend) ?    
+                                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
+                                                    : 
+                                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
+                                                :
+                                                // L
+                                                !this.state.popupotBeforestart && !this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && this.state.pop_otstart && this.state.pop_otend ?
+                                                    (this.state.pop_befstart <= this.state.pop_befend) &&
+                                                    (this.state.pop_befend <= this.state.pop_aftstart) &&
+                                                    (this.state.pop_aftstart <= this.state.pop_aftend) &&
+                                                    (this.state.pop_aftend <= this.state.pop_otstart) ? 
+                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
+                                                        :
+                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
+                                                    :
+                                                    // Nomal
+                                                    !this.state.popupotBeforestart && !this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && !this.state.pop_otstart && !this.state.pop_otend ?
+                                                        (this.state.pop_befstart <= this.state.pop_befend) &&
+                                                        (this.state.pop_befend <= this.state.pop_aftstart) &&
+                                                        (this.state.pop_aftstart <= this.state.pop_aftend) ? 
+                                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
+                                                            :
+                                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
+                                                        :
+                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ครบ)</button>
                                     }
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
