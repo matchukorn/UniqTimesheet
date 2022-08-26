@@ -451,5 +451,56 @@ export default class Service{
         }
         return data;
     }
+    projectmastermonth = async (token) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "projectmastermonth");
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    departmentrmonth = async (token, par_project) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "departmentrmonth");
+        formData.append("par_project", par_project);
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    activitymonth = async (token, par_project, par_dep) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "activitymonth");
+        formData.append("par_project", par_project);
+        formData.append("par_dep", par_dep);
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
 
 }

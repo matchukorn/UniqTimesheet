@@ -101,7 +101,7 @@ export default class Login extends Component {
                           <input type="text" className="form-control" name="username" ref={this.username} placeholder="รหัสพนักงาน" autoFocus={true} />
                         </div>
                         <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 15 }}>
-                          <input type="text" className="form-control" name="password" ref={this.password} placeholder="ววดดปปปป" autoFocus={true} />
+                          <input type="password" className="form-control" name="password" ref={this.password} placeholder="ววดดปปปป" autoFocus={true} />
                         </div>
                         <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 15 }}>
                           <button type="submit" className="btn btn-danger" style={{ width: '100%', backgroundColor: '#8c1e21' }}>Sign In</button>

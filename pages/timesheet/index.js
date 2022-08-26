@@ -51,8 +51,11 @@ export default class Timesheet extends Component {
             txtworktime_fristtime: '',
             txtworktime_lasttime: '',
             txtworktime_project: '',
+            txtworktime_projectlabel: '',
             txtworktime_department: '',
+            txtworktime_departmentlabel: '',
             txtworktime_activity: '',
+            txtworktime_activitylabel: '',
             txtworktime_comment: '',
             txtworktime_item: [],
             optionproject: [],
@@ -65,8 +68,11 @@ export default class Timesheet extends Component {
             txtworktimeleave_sfristtime: '',
             txtworktimeleave_elasttime: '',
             txtworktimeleave_project: '',
+            txtworktimeleave_projectlabel: '',
             txtworktimeleave_department: '',
+            txtworktimeleave_departmentlabel: '',
             txtworktimeleave_activity: '',
+            txtworktimeleave_activitylabel: '',
             txtworktimeleave_comment: '',
             txtworktimeleave_item: [],
             showpopupType2: false,
@@ -88,18 +94,12 @@ export default class Timesheet extends Component {
                     this.getMonthTimeSheetNormal();
                     this.getMonthTimeSheetNormalLeave();
                     this.getMonthLeave();
+                    this.projectmastermonth();
                 } catch (error) {
                     
                 }
-                // if(localStorage.getItem('typeTimesheet')==='1'){
-                //     this.getMonthTimeSheetNormal();
-                // }else if(localStorage.getItem('typeTimesheet')==='2'){
-                //     this.getMonthTimeSheetNormalLeave();
-                // }else if(localStorage.getItem('typeTimesheet')==='3'){
-                //     this.getMonthLeave();
-                // }
             } else {
-                this.popupselecttype();
+                this.showpopupselecttype(true);
             }
         } else {
             window.location.href = "/"
@@ -114,6 +114,102 @@ export default class Timesheet extends Component {
             });
         });
     }
+
+
+    projectmastermonth = async () => {
+        await new Service().projectmastermonth(getCookie('token')).then(res => {
+            if (res.data) {
+                this.setState({
+                    optionproject: res.data,
+                });
+            } else {
+                this.setState({
+                    optionproject: [],
+                });
+            }
+        });
+    }
+    departmentrmonth = async (par_projectcode) => {
+        await new Service().departmentrmonth(getCookie('token'), par_projectcode).then(res => {
+            if (res.data) {
+                this.setState({
+                    optiondepartment: res.data,
+                });
+            } else {
+                this.setState({
+                    optiondepartment: [],
+                });
+            }
+        });
+    }
+    activitymonth = async (par_projectcode, par_activity) => {
+        await new Service().activitymonth(getCookie('token'), par_projectcode, par_activity).then(res => {
+            if (res.data) {
+                this.setState({
+                    optionactivity: res.data,
+                });
+            } else {
+                this.setState({
+                    optionactivity: [],
+                });
+            }
+        });
+    }
+    // OPTION WORKTIME
+    changeProjectworktime = (e) => {
+        this.setState({
+            txtworktime_project: e.value,
+            txtworktime_projectlabel: e.label,
+            txtworktime_department: '',
+            txtworktime_departmentlabel: '',
+            txtworktime_activity: '',
+            txtworktime_activitylabel: ''
+        });
+        this.departmentrmonth(e.value);
+    }
+    changeDepworktime = (e) => {
+        this.setState({
+            txtworktime_department: e.value,
+            txtworktime_departmentlabel: e.label,
+            txtworktime_activity: '',
+            txtworktime_activitylabel: ''
+        });
+        this.activitymonth(this.state.txtworktime_project, e.value);
+    }
+    changeActivityworktime = (e) => {
+        this.setState({
+            txtworktime_activity: e.value,
+            txtworktime_activitylabel: e.label,
+        });
+    }
+    // OPTION WORKTIMELEAVE
+    changeProjectworktimeleave = (e) => {
+        this.setState({
+            txtworktimeleave_project: e.value,
+            txtworktimeleave_projectlabel: e.label,
+            txtworktimeleave_department: '',
+            txtworktimeleave_departmentlabel: '',
+            txtworktimeleave_activity: '',
+            txtworktimeleave_activitylabel: ''
+        });
+        this.departmentrmonth(e.value);
+    }
+    changeDepworktimeleave = (e) => {
+        this.setState({
+            txtworktimeleave_department: e.value,
+            txtworktimeleave_departmentlabel: e.label,
+            txtworktimeleave_activity: '',
+            txtworktimeleave_activitylabel: ''
+        });
+        this.activitymonth(this.state.txtworktimeleave_project.value, e.value);
+    }
+    changeActivityworktimeleave = (e) => {
+        this.setState({
+            txtworktimeleave_activity: e.value,
+            txtworktimeleave_activitylabel: e.label,
+        });
+    }
+
 
     // การลาทั้งวัน
     getMonthLeave = async () => {
@@ -229,8 +325,11 @@ export default class Timesheet extends Component {
             txtworktime_fristtime: '',
             txtworktime_lasttime: '',
             txtworktime_project: '',
+            txtworktime_projectlabel: '',
             txtworktime_department: '',
+            txtworktime_departmentlabel: '',
             txtworktime_activity: '',
+            txtworktime_activitylabel: '',
             txtworktime_comment: '',
         });
     }
@@ -242,10 +341,15 @@ export default class Timesheet extends Component {
             txtworktime_fristtime: txtworktime_item[key].worktime_fristtime,
             txtworktime_lasttime: txtworktime_item[key].worktime_lasttime,
             txtworktime_project: txtworktime_item[key].worktime_projectvalue,
+            txtworktime_projectlabel: txtworktime_item[key].worktime_projectlabel,
             txtworktime_department: txtworktime_item[key].worktime_departmentvalue,
+            txtworktime_departmentlabel: txtworktime_item[key].worktime_departmentlabel,
             txtworktime_activity: txtworktime_item[key].worktime_activityvalue,
+            txtworktime_activitylabel: txtworktime_item[key].worktime_activitylabel,
             txtworktime_comment: txtworktime_item[key].worktime_comment,
         });
+        this.departmentrmonth(txtworktime_item[key].worktime_projectvalue);
+        this.activitymonth(txtworktime_item[key].worktime_projectvalue, txtworktime_item[key].worktime_departmentvalue);
     }
     addWorktime = (event) => {
         let { txtworktime_item } = this.state;
@@ -255,8 +359,11 @@ export default class Timesheet extends Component {
                 worktime_fristtime: this.state.txtworktime_fristtime,
                 worktime_lasttime: this.state.txtworktime_lasttime,
                 worktime_projectvalue: this.state.txtworktime_project,
+                worktime_projectlabel: this.state.txtworktime_projectlabel,
                 worktime_departmentvalue: this.state.txtworktime_department,
+                worktime_departmentlabel: this.state.txtworktime_departmentlabel,
                 worktime_activityvalue: this.state.txtworktime_activity,
+                worktime_activitylabel: this.state.txtworktime_activitylabel,
                 worktime_comment: this.state.txtworktime_comment,
                 worktime_sum: this.state.txtworktime_fristtime <= this.state.txtworktime_lasttime ? (parseFloat(this.state.txtworktime_lasttime) - parseFloat(this.state.txtworktime_fristtime)) : ((parseFloat(this.state.txtworktime_lasttime) + 24) - parseFloat(this.state.txtworktime_fristtime))
             }
@@ -269,8 +376,11 @@ export default class Timesheet extends Component {
                 worktime_fristtime: this.state.txtworktime_fristtime,
                 worktime_lasttime: this.state.txtworktime_lasttime,
                 worktime_projectvalue: this.state.txtworktime_project,
+                worktime_projectlabel: this.state.txtworktime_projectlabel,
                 worktime_departmentvalue: this.state.txtworktime_department,
+                worktime_departmentlabel: this.state.txtworktime_departmentlabel,
                 worktime_activityvalue: this.state.txtworktime_activity,
+                worktime_activitylabel: this.state.txtworktime_activitylabel,
                 worktime_comment: this.state.txtworktime_comment,
                 worktime_sum: this.state.txtworktime_fristtime <= this.state.txtworktime_lasttime ? (parseFloat(this.state.txtworktime_lasttime) - parseFloat(this.state.txtworktime_fristtime)) : ((parseFloat(this.state.txtworktime_lasttime) + 24) - parseFloat(this.state.txtworktime_fristtime))
             }]
@@ -287,6 +397,9 @@ export default class Timesheet extends Component {
             txtworktime_item[keypopupType1].worktime_projectvalue = this.state.txtworktime_project;
             txtworktime_item[keypopupType1].worktime_departmentvalue = this.state.txtworktime_department;
             txtworktime_item[keypopupType1].worktime_activityvalue = this.state.txtworktime_activity;
+            txtworktime_item[keypopupType1].worktime_projectlabel = this.state.txtworktime_projectlabel;
+            txtworktime_item[keypopupType1].worktime_departmentlabel = this.state.txtworktime_departmentlabel;
+            txtworktime_item[keypopupType1].worktime_activitylabel = this.state.txtworktime_activitylabel;
             txtworktime_item[keypopupType1].worktime_comment = this.state.txtworktime_comment;
             txtworktime_item[keypopupType1].worktime_sum = this.state.txtworktime_fristtime <= this.state.txtworktime_lasttime ? (parseFloat(this.state.txtworktime_lasttime) - parseFloat(this.state.txtworktime_fristtime)) : ((parseFloat(this.state.txtworktime_lasttime) + 24) - parseFloat(this.state.txtworktime_fristtime))
             this.setState({txtworktime_item});
@@ -376,7 +489,6 @@ export default class Timesheet extends Component {
     }
     getMonthTimeSheetNormal = async () => {
         await new Service().getMonthTimeSheetNormal(getCookie('token')).then(res => {
-            // console.log(JSON.stringify(res.data))
             this.setState({
                 txtworktime_status: res.data.H_status,
                 txtworktime_item: res.data.H_body
@@ -397,6 +509,9 @@ export default class Timesheet extends Component {
                 worktimeleave_project: this.state.txtworktimeleave_project,
                 worktimeleave_department: this.state.txtworktimeleave_department,
                 worktimeleave_activity: this.state.txtworktimeleave_activity,
+                worktimeleave_projectlabel: this.state.txtworktimeleave_projectlabel,
+                worktimeleave_departmentlabel: this.state.txtworktimeleave_departmentlabel,
+                worktimeleave_activitylabel: this.state.txtworktimeleave_activitylabel,
                 worktimeleave_comment: this.state.txtworktimeleave_comment,
                 worktimeleave_sumL: this.state.txtworktimeleave_fristtime <= this.state.txtworktimeleave_lasttime ? (parseFloat(this.state.txtworktimeleave_lasttime) - parseFloat(this.state.txtworktimeleave_fristtime)) : ((parseFloat(this.state.txtworktimeleave_lasttime) + 24) - parseFloat(this.state.txtworktimeleave_fristtime)),
                 worktimeleave_sumN: this.state.txtworktimeleave_sfristtime <= this.state.txtworktimeleave_elasttime ? (parseFloat(this.state.txtworktimeleave_elasttime) - parseFloat(this.state.txtworktimeleave_sfristtime)) : ((parseFloat(this.state.txtworktimeleave_elasttime) + 24) - parseFloat(this.state.txtworktimeleave_sfristtime))
@@ -414,6 +529,9 @@ export default class Timesheet extends Component {
                 worktimeleave_project: this.state.txtworktimeleave_project,
                 worktimeleave_department: this.state.txtworktimeleave_department,
                 worktimeleave_activity: this.state.txtworktimeleave_activity,
+                worktimeleave_projectlabel: this.state.txtworktimeleave_projectlabel,
+                worktimeleave_departmentlabel: this.state.txtworktimeleave_departmentlabel,
+                worktimeleave_activitylabel: this.state.txtworktimeleave_activitylabel,
                 worktimeleave_comment: this.state.txtworktimeleave_comment,
                 worktimeleave_sumL: this.state.txtworktimeleave_fristtime <= this.state.txtworktimeleave_lasttime ? (parseFloat(this.state.txtworktimeleave_lasttime) - parseFloat(this.state.txtworktimeleave_fristtime)) : ((parseFloat(this.state.txtworktimeleave_lasttime) + 24) - parseFloat(this.state.txtworktimeleave_fristtime)),
                 worktimeleave_sumN: this.state.txtworktimeleave_sfristtime <= this.state.txtworktimeleave_elasttime ? (parseFloat(this.state.txtworktimeleave_elasttime) - parseFloat(this.state.txtworktimeleave_sfristtime)) : ((parseFloat(this.state.txtworktimeleave_elasttime) + 24) - parseFloat(this.state.txtworktimeleave_sfristtime))
@@ -433,6 +551,9 @@ export default class Timesheet extends Component {
             txtworktimeleave_project: '',
             txtworktimeleave_department: '',
             txtworktimeleave_activity: '',
+            txtworktimeleave_projectlabel: '',
+            txtworktimeleave_departmentlabel: '',
+            txtworktimeleave_activitylabel: '',
             txtworktimeleave_comment: '',
         });
     }
@@ -467,8 +588,13 @@ export default class Timesheet extends Component {
             txtworktimeleave_project: txtworktimeleave_item[key].worktimeleave_project,
             txtworktimeleave_department: txtworktimeleave_item[key].worktimeleave_department,
             txtworktimeleave_activity: txtworktimeleave_item[key].worktimeleave_activity,
+            txtworktimeleave_projectlabel: txtworktimeleave_item[key].worktimeleave_projectlabel,
+            txtworktimeleave_departmentlabel: txtworktimeleave_item[key].worktimeleave_departmentlabel,
+            txtworktimeleave_activitylabel: txtworktimeleave_item[key].worktimeleave_activitylabel,
             txtworktimeleave_comment: txtworktimeleave_item[key].worktimeleave_comment,
         });
+        this.departmentrmonth(txtworktimeleave_item[key].worktimeleave_project);
+        this.activitymonth(txtworktimeleave_item[key].worktimeleave_project, txtworktimeleave_item[key].worktimeleave_department);
     }
     editWorkLeavetime = (event) => {
         let { txtworktimeleave_item, keypopupeditType2 } = this.state;
@@ -481,6 +607,9 @@ export default class Timesheet extends Component {
             txtworktimeleave_item[keypopupeditType2].worktimeleave_project = this.state.txtworktimeleave_project;
             txtworktimeleave_item[keypopupeditType2].worktimeleave_department = this.state.txtworktimeleave_department;
             txtworktimeleave_item[keypopupeditType2].worktimeleave_activity = this.state.txtworktimeleave_activity;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_projectlabel = this.state.txtworktimeleave_projectlabel;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_departmentlabel = this.state.txtworktimeleave_departmentlabel;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_activitylabel = this.state.txtworktimeleave_activitylabel;
             txtworktimeleave_item[keypopupeditType2].worktimeleave_comment = this.state.txtworktimeleave_comment;
             txtworktimeleave_item[keypopupeditType2].worktimeleave_sumL = this.state.txtworktimeleave_fristtime <= this.state.txtworktimeleave_lasttime ? (parseFloat(this.state.txtworktimeleave_lasttime) - parseFloat(this.state.txtworktimeleave_fristtime)) : ((parseFloat(this.state.txtworktimeleave_lasttime) + 24) - parseFloat(this.state.txtworktimeleave_fristtime)),
             txtworktimeleave_item[keypopupeditType2].worktimeleave_sumN = this.state.txtworktimeleave_sfristtime <= this.state.txtworktimeleave_elasttime ? (parseFloat(this.state.txtworktimeleave_elasttime) - parseFloat(this.state.txtworktimeleave_sfristtime)) : ((parseFloat(this.state.txtworktimeleave_elasttime) + 24) - parseFloat(this.state.txtworktimeleave_sfristtime))
@@ -666,16 +795,31 @@ export default class Timesheet extends Component {
                                         </div>
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <label>โครงการ*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_project} onChange={(e) => this.setState({ txtworktime_project: e.target.value })}/>
+                                        <label>โครงการ* {this.state.txtworktime_project}</label>
+                                        <Select
+                                            options={this.state.optionproject}
+                                            value={this.state.optionproject.filter(option => option.value === this.state.txtworktime_project )}
+                                            onChange={(e) => this.changeProjectworktime(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>แผนก*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_department} onChange={(e) => this.setState({ txtworktime_department: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optiondepartment}
+                                            value={this.state.optiondepartment.filter(option => option.value === this.state.txtworktime_department )}
+                                            onChange={(e) => this.changeDepworktime(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>กิจกรรม*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_activity} onChange={(e) => this.setState({ txtworktime_activity: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optionactivity}
+                                            value={this.state.optionactivity.filter(option => option.value === this.state.txtworktime_activity )}
+                                            onChange={(e) => this.changeActivityworktime(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>หมายเหตุ</label>
@@ -688,7 +832,12 @@ export default class Timesheet extends Component {
                             <div className={styles.row} style={{ width: '100%' }}>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                    {
+                                        this.state.txtworktime_project && this.state.txtworktime_department && this.state.txtworktime_activity ?
+                                        <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                        :
+                                        <button type="button" disabled={true} variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                    }
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
                                     <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupType1(false)}>ยกเลิก</button>
@@ -734,15 +883,30 @@ export default class Timesheet extends Component {
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>โครงการ*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_project} onChange={(e) => this.setState({ txtworktime_project: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optionproject}
+                                            value={this.state.optionproject.filter(option => option.value === this.state.txtworktime_project )}
+                                            onChange={(e) => this.changeProjectworktime(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>แผนก*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_department} onChange={(e) => this.setState({ txtworktime_department: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optiondepartment}
+                                            value={this.state.optiondepartment.filter(option => option.value === this.state.txtworktime_department )}
+                                            onChange={(e) => this.changeDepworktime(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>กิจกรรม*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_activity} onChange={(e) => this.setState({ txtworktime_activity: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optionactivity}
+                                            value={this.state.optionactivity.filter(option => option.value === this.state.txtworktime_activity )}
+                                            onChange={(e) => this.changeActivityworktime(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>หมายเหตุ</label>
@@ -755,7 +919,12 @@ export default class Timesheet extends Component {
                             <div className={styles.row} style={{ width: '100%' }}>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                    {
+                                        this.state.txtworktime_project && this.state.txtworktime_department && this.state.txtworktime_activity ?
+                                            <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                            :
+                                            <button type="button" disabled={true} variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                    }
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
                                     <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupeditType1(false, this.state.keypopupType1)}>ยกเลิก</button>
@@ -815,15 +984,30 @@ export default class Timesheet extends Component {
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>โครงการ*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_project} onChange={(e) => this.setState({ txtworktimeleave_project: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optionproject}
+                                            value={this.state.optionproject.filter(option => option.value === this.state.txtworktimeleave_project )}
+                                            onChange={(e) => this.changeProjectworktimeleave(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>แผนก*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_department} onChange={(e) => this.setState({ txtworktimeleave_department: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optiondepartment}
+                                            value={this.state.optiondepartment.filter(option => option.value === this.state.txtworktimeleave_department )}
+                                            onChange={(e) => this.changeDepworktimeleave(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>กิจกรรม*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_activity} onChange={(e) => this.setState({ txtworktimeleave_activity: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optionactivity}
+                                            value={this.state.optionactivity.filter(option => option.value === this.state.txtworktimeleave_activity )}
+                                            onChange={(e) => this.changeActivityworktimeleave(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>หมายเหตุ</label>
@@ -895,15 +1079,30 @@ export default class Timesheet extends Component {
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>โครงการ*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_project} onChange={(e) => this.setState({ txtworktimeleave_project: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optionproject}
+                                            value={this.state.optionproject.filter(option => option.value === this.state.txtworktimeleave_project )}
+                                            onChange={(e) => this.changeProjectworktimeleave(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>แผนก*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_department} onChange={(e) => this.setState({ txtworktimeleave_department: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optiondepartment}
+                                            value={this.state.optiondepartment.filter(option => option.value === this.state.txtworktimeleave_department )}
+                                            onChange={(e) => this.changeDepworktimeleave(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>กิจกรรม*</label>
-                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_activity} onChange={(e) => this.setState({ txtworktimeleave_activity: e.target.value })}/>
+                                        <Select
+                                            options={this.state.optionactivity}
+                                            value={this.state.optionactivity.filter(option => option.value === this.state.txtworktimeleave_activity )}
+                                            onChange={(e) => this.changeActivityworktimeleave(e)}
+                                            styles={stylesselect}
+                                        />
                                     </div>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                         <label>หมายเหตุ</label>
@@ -1043,9 +1242,15 @@ export default class Timesheet extends Component {
                                                                             <td>{item.worktime_fristtime}</td>
                                                                             <td>{item.worktime_lasttime}</td>
                                                                             <td>
-                                                                                <div style={{ fontSize: 11 }}>โครงการ : {item.worktime_projectvalue}</div>
-                                                                                <div style={{ fontSize: 11 }}>แผนก : {item.worktime_departmentvalue}</div>
-                                                                                <div style={{ fontSize: 11 }}>กิจกรรม : {item.worktime_activityvalue}</div>
+                                                                                <div style={{ fontSize: 11 }}>โครงการ : 
+                                                                                    {item.worktime_projectlabel}
+                                                                                </div>
+                                                                                <div style={{ fontSize: 11 }}>แผนก : 
+                                                                                    {item.worktime_departmentlabel}
+                                                                                </div>
+                                                                                <div style={{ fontSize: 11 }}>กิจกรรม : 
+                                                                                    {item.worktime_activitylabel}
+                                                                                </div>
                                                                                 <div style={{ fontSize: 11 }}>หมายเหตุ : {item.worktime_comment}</div>
                                                                             </td>
                                                                             <td>
@@ -1136,9 +1341,9 @@ export default class Timesheet extends Component {
                                                                                 <div>{item.worktimeleave_elasttime}</div>
                                                                             </td>
                                                                             <td>
-                                                                                <div style={{ fontSize: 11 }}>โครงการ : {item.worktimeleave_project}</div>
-                                                                                <div style={{ fontSize: 11 }}>แผนก : {item.worktimeleave_department}</div>
-                                                                                <div style={{ fontSize: 11 }}>กิจกรรม : {item.worktimeleave_activity}</div>
+                                                                                <div style={{ fontSize: 11 }}>โครงการ : {item.worktimeleave_projectlabel}</div>
+                                                                                <div style={{ fontSize: 11 }}>แผนก : {item.worktimeleave_departmentlabel}</div>
+                                                                                <div style={{ fontSize: 11 }}>กิจกรรม : {item.worktimeleave_activitylabel}</div>
                                                                                 <div style={{ fontSize: 11 }}>หมายเหตุ : {item.worktimeleave_comment}</div>
                                                                             </td>
                                                                             <td>
