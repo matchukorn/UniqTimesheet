@@ -17,6 +17,18 @@ export default class Service{
         }
         return data;
     }
+    gettokenm = async (emp_code, emp_pass) => {
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "tokeninfom");
+        formData.append("emp_code", emp_code);
+        formData.append("emp_pass", emp_pass);
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
     // Get Authen
     getuserinfo = async (token) => {
         var config = {
@@ -67,7 +79,7 @@ export default class Service{
         }
         return data;
     }
-    projectactivity = async (token, par_projectcode) => {
+    projectactivity = async (token, par_projectcode, project_location, project_activity) => {
         var config = {
             headers: {
                 "Accept": "application/json",
@@ -78,6 +90,8 @@ export default class Service{
         let formData = new FormData();
         formData.append("method", "projectactivity");
         formData.append("par_projectcode", par_projectcode);
+        formData.append("project_location", project_location);
+        formData.append("project_activity", project_activity);
         try {
             data = await axios.post(Url, formData, config);
         } catch (e) {
@@ -211,9 +225,13 @@ export default class Service{
             formData.append("Em_EndTimePart2[]", item.atfend);
             formData.append("Em_OverTimeStartTime[]", item.otstart);
             formData.append("Em_OverTimeEndTime[]", item.otend);
+            formData.append("Em_Sicktype[]", item.leavesick);
+            formData.append("Em_SickStartTime[]", item.sickstart);
+            formData.append("Em_SickEndTime[]", item.sickend);
         });
         itemprogress.forEach((item) => {
             formData.append("TimeSheetProgrssWorkdone[]", item.detail);
+            formData.append("TimeSheetProgressKM[]", item.km);
             formData.append("TimeSheetProgrssQuantity[]", item.volumn);
             formData.append("TimeSheetProgressUnit[]", item.unit);
         });
@@ -224,5 +242,214 @@ export default class Service{
         return data;
     }
 
+    // VERSION 2
+    listEmployee = async(token) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "listEmployee");
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+
+    // Month Sick Leave
+    addMonthLeave = async(token, leave_day, leave_fristtime, leave_lasttime) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "addMonthLeave");
+        formData.append("leave_day", leave_day);
+        formData.append("leave_fristtime", leave_fristtime);
+        formData.append("leave_lasttime", leave_lasttime);
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    getMonthLeave = async(token) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "getMonthLeave");
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    addMonthLeaveSubmit = async(token, leave_day, leave_fristtime, leave_lasttime) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "addMonthLeaveSubmit");
+        formData.append("leave_day", leave_day);
+        formData.append("leave_fristtime", leave_fristtime);
+        formData.append("leave_lasttime", leave_lasttime);
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    addMonthTimeSheetSave = async(token, TimeSheetHeader_date, worktime_item) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "addMonthTimeSheetSave");
+        formData.append("TimeSheetHeader_date", TimeSheetHeader_date);
+        worktime_item.forEach((item) => {
+            formData.append("TimeSheetManday_fristtime[]", item.worktime_fristtime);
+            formData.append("TimeSheetManday_lasttime[]", item.worktime_lasttime);
+            formData.append("TimeSheetManday_project[]", item.worktime_projectvalue);
+            formData.append("TimeSheetManday_department[]", item.worktime_departmentvalue);
+            formData.append("TimeSheetManday_activity[]", item.worktime_activityvalue);
+            formData.append("TimeSheetManday_comment[]", item.worktime_comment);
+        });
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    addMonthTimeSheetSubmit = async(token, TimeSheetHeader_date, worktime_item) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "addMonthTimeSheetSubmit");
+        formData.append("TimeSheetHeader_date", TimeSheetHeader_date);
+        worktime_item.forEach((item) => {
+            formData.append("TimeSheetManday_fristtime[]", item.worktime_fristtime);
+            formData.append("TimeSheetManday_lasttime[]", item.worktime_lasttime);
+            formData.append("TimeSheetManday_project[]", item.worktime_projectvalue);
+            formData.append("TimeSheetManday_department[]", item.worktime_departmentvalue);
+            formData.append("TimeSheetManday_activity[]", item.worktime_activityvalue);
+            formData.append("TimeSheetManday_comment[]", item.worktime_comment);
+        });
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    getMonthTimeSheetNormal = async(token) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "getMonthTimeSheetNormal");
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    addMonthTimeSheetLeaveSave = async(token, TimeSheetHeader_date, txtworktimeleave_item) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "addMonthTimeSheetLeaveSave");
+        formData.append("TimeSheetHeader_date", TimeSheetHeader_date);
+        txtworktimeleave_item.forEach((item) => {
+            formData.append("TimeSheetManday_sfristtime[]", item.worktimeleave_fristtime);
+            formData.append("TimeSheetManday_elasttime[]", item.worktimeleave_lasttime);
+            formData.append("TimeSheetManday_fristtime[]", item.worktimeleave_sfristtime);
+            formData.append("TimeSheetManday_lasttime[]", item.worktimeleave_elasttime);
+            formData.append("TimeSheetManday_project[]", item.worktimeleave_project);
+            formData.append("TimeSheetManday_department[]", item.worktimeleave_department);
+            formData.append("TimeSheetManday_activity[]", item.worktimeleave_activity);
+            formData.append("TimeSheetManday_comment[]", item.worktimeleave_comment);
+        });
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    addMonthTimeSheetLeaveSubmit = async(token, TimeSheetHeader_date, txtworktimeleave_item) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "addMonthTimeSheetLeaveSubmit");
+        formData.append("TimeSheetHeader_date", TimeSheetHeader_date);
+        txtworktimeleave_item.forEach((item) => {
+            formData.append("TimeSheetManday_sfristtime[]", item.worktimeleave_fristtime);
+            formData.append("TimeSheetManday_elasttime[]", item.worktimeleave_lasttime);
+            formData.append("TimeSheetManday_fristtime[]", item.worktimeleave_sfristtime);
+            formData.append("TimeSheetManday_lasttime[]", item.worktimeleave_elasttime);
+            formData.append("TimeSheetManday_project[]", item.worktimeleave_project);
+            formData.append("TimeSheetManday_department[]", item.worktimeleave_department);
+            formData.append("TimeSheetManday_activity[]", item.worktimeleave_activity);
+            formData.append("TimeSheetManday_comment[]", item.worktimeleave_comment);
+        });
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
+    getMonthTimeSheetNormalLeave = async(token) => {
+        var config = {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": token
+            }
+        };
+        let data = '';
+        let formData = new FormData();
+        formData.append("method", "getMonthTimeSheetNormalLeave");
+        try {
+            data = await axios.post(Url, formData, config);
+        } catch (e) {
+        }
+        return data;
+    }
 
 }

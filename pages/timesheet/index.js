@@ -6,13 +6,11 @@ import logo from '../../public/logouniq.png';
 import Head from 'next/head';
 import { Modal } from 'react-bootstrap-v5';
 import Service from '../api/Service';
-import { getCookie, setCookies } from 'cookies-next';
+import { getCookie, setCookies, removeCookies } from 'cookies-next';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 import Image from 'next/image';
-
 import { Container, Row, Col, Card, CardHeader, CardBody, CardFooter, Form, FormGroup, Label, Input, Button, Nav, NavItem, NavLink, Table } from 'reactstrap'
-import { BothBordeds, Submit, Cancel } from "../../constant";
 
 
 const stylesselect = {
@@ -25,71 +23,84 @@ const stylesselect = {
         zIndex: 111
     })
 };
-export default class BI extends Component {
+export default class Timesheet extends Component {
     constructor(props) {
         super(props);
         this.state = {
             keyitememp: '',
             keyempname: '',
             keyempcode: '',
-            optionempname: [],
-            popupcreateemployee: false,
             EmployeeCode: '',
             EmployeeDisplayName: '',
             EmplolyeeTypeCode: '',
-            popupinput: false,
-            popupprogress: false,
             tabindex: '1',
             txt_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate())).slice(-2),
             min_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate() - 1)).slice(-2),
             max_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate())).slice(-2),
-            optionprojectname: [],
-            txt_projectnamevalue: '',
-            txt_projectlabel: '',
-            optionzone: [],
-            txt_zonevalue: '',
-            txt_zonelabel: '',
+            typemenu: '',
+            showpopupType3: false,
+            txtsickallday_id: '',
+            txtsickallday_date: '',
+            txtsickallday_fristtime: '',
+            txtsickallday_lasttime: '',
+            txtsickallday_item: '',
+            showpopupType1: false,
+            showpopupeditType1: false,
+            keypopupType1: '',
+            txtworktime_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate())).slice(-2),
+            txtworktime_fristtime: '',
+            txtworktime_lasttime: '',
+            txtworktime_project: '',
+            txtworktime_department: '',
+            txtworktime_activity: '',
+            txtworktime_comment: '',
+            txtworktime_item: [],
+            optionproject: [],
+            optiondepartment: [],
             optionactivity: [],
-            txt_activityvalue: '',
-            txt_activitycode: '',
-            txt_activitylabel: '',
-            optionlocation: [],
-            txt_locationvalue: '',
-            txt_locationlabel: '',
-            txt_goal: '',
-            txt_actual: '',
-            pop_empcode: '',
-            pop_fullname: '',
-            pop_befstart: '',
-            pop_befend: '',
-            pop_aftstart: '',
-            pop_aftend: '',
-            pop_otstart: '',
-            pop_otend: '',
-            itemprogress: [],
-            pop_progressdetail: '',
-            pop_progressunit: '',
-            pop_progressvolumn: '',
-            item_employee: [],
-            jobtargetvalue: '',
-            jobtargetlabel: '',
-            activitycode: '',
-            CostCenterCode: '',
-            JobCode: '',
-            checkitemall: false,
-            popupeditprogress: false,
-            idItemprogress: '',
-            addotinput: false,
-            addotinputedit: false,
-            popupotBeforestart: '',
-            popupotBeforeend: '',
+            txtworktime_status: '',
+            txtworktimeleave_date: new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + (new Date().getDate())).slice(-2),
+            txtworktimeleave_fristtime: '',
+            txtworktimeleave_lasttime: '',
+            txtworktimeleave_sfristtime: '',
+            txtworktimeleave_elasttime: '',
+            txtworktimeleave_project: '',
+            txtworktimeleave_department: '',
+            txtworktimeleave_activity: '',
+            txtworktimeleave_comment: '',
+            txtworktimeleave_item: [],
+            showpopupType2: false,
+            txtworktimeleave_status: '',
+            showpopupeditType2: false,
+            keypopupeditType2: '',
+            showpopupselecttype: false,
         }
     }
     componentDidMount() {
-        window.onbeforeunload = function () { return false; }
+        // window.onbeforeunload = function () { return false; }
         if (getCookie('token')) {
             this.getuserinfo();
-            this.listmasteremployee();
+            if (localStorage.getItem('typeTimesheet')) {
+                this.setState({
+                    typemenu: localStorage.getItem('typeTimesheet')
+                })
+                try {
+                    this.getMonthTimeSheetNormal();
+                    this.getMonthTimeSheetNormalLeave();
+                    this.getMonthLeave();
+                } catch (error) {
+                    
+                }
+                // if(localStorage.getItem('typeTimesheet')==='1'){
+                //     this.getMonthTimeSheetNormal();
+                // }else if(localStorage.getItem('typeTimesheet')==='2'){
+                //     this.getMonthTimeSheetNormalLeave();
+                // }else if(localStorage.getItem('typeTimesheet')==='3'){
+                //     this.getMonthLeave();
+                // }
+            } else {
+                this.popupselecttype();
+            }
         } else {
             window.location.href = "/"
         }
@@ -101,797 +112,506 @@ export default class BI extends Component {
                 EmployeeDisplayName: res.data.EmployeeDisplayName,
                 EmplolyeeTypeCode: res.data.EmplolyeeTypeCode,
             });
-            this.projectmaster(res.data.EmployeeCode);
-        });
-    }
-    projectmaster = async () => {
-        await new Service().projectmaster(getCookie('token')).then(res => {
-            if (res.data) {
-                this.setState({
-                    optionprojectname: res.data,
-                });
-            } else {
-                this.setState({
-                    optionprojectname: [],
-                });
-            }
-        });
-    }
-    zonename = async (parject_code) => {
-        await new Service().zonename(getCookie('token'), parject_code).then(res => {
-            if (res.data) {
-                this.setState({
-                    optionzone: res.data,
-                    txt_zonevalue: '',
-                    txt_zonelabel: ''
-                });
-            } else {
-                this.setState({
-                    optionzone: [],
-                    txt_zonevalue: '',
-                    txt_zonelabel: ''
-                });
-            }
-        });
-    }
-    projectactivity = async (parject_code) => {
-        await new Service().projectactivity(getCookie('token'), parject_code).then(res => {
-            if (res.data) {
-                this.setState({
-                    optionactivity: res.data,
-                    txt_activityvalue: '',
-                    txt_activitycode: '',
-                    txt_activitylabel: '',
-                });
-            } else {
-                this.setState({
-                    optionactivity: '',
-                    txt_activityvalue: '',
-                    txt_activitycode: '',
-                    txt_activitylabel: '',
-                });
-            }
-        });
-    }
-    projectsublocation = async (par_projectcode, par_location) => {
-        await new Service().projectsublocation(getCookie('token'), par_projectcode, par_location).then(res => {
-            if (res.data) {
-                this.setState({
-                    optionlocation: res.data,
-                    txt_locationvalue: '',
-                    txt_locationlabel: ''
-                });
-            } else {
-                this.setState({
-                    optionlocation: '',
-                    txt_locationvalue: '',
-                    txt_locationlabel: ''
-                });
-            }
-        });
-    }
-    employeesubactivity = async (ProjectActivity, ProjectSubActivityCode) => {
-        await new Service().employeesubactivity(getCookie('token'), ProjectActivity, ProjectSubActivityCode, this.state.EmployeeCode, 'D').then(res => {
-            if (res.data) {
-                this.setState({
-                    item_employee: res.data,
-                });
-            } else {
-                this.setState({
-                    item_employee: '',
-                });
-            }
-        });
-    }
-    masterjobid = async (ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode) => {
-        await new Service().masterjobid(getCookie('token'), ProjectCode, ProjectActivityCode, ProjectSubActivityCode, ProjectLocationCode, ProjectSubLocationCode).then(res => {
-            if (res.data) {
-                this.setState({
-                    JobCode: res.data.JobCode,
-                    CostCenterCode: res.data.CostCenterCode,
-                    jobtargetvalue: res.data.JobTarget,
-                    jobtargetlabel: res.data.JobUnit,
-                });
-            } else {
-                this.setState({
-                    JobCode: '',
-                    CostCenterCode: '',
-                    jobtargetvalue: '',
-                    jobtargetlabel: '',
-                });
-            }
-        });
-    }
-    listmasteremployee = async () => {
-        await new Service().listmasteremployee(getCookie('token')).then(res => {
-            if (res.data) {
-                this.setState({
-                    optionempname: res.data,
-                });
-            } else {
-                this.setState({
-                    optionempname: []
-                });
-            }
         });
     }
 
-    changeProjectname = (e) => {
-        this.setState({
-            txt_projectnamevalue: e,
-            txt_projectlabel: e.label,
-            txt_zonevalue: '',
-            txt_zonelabel: '',
-            txt_activityvalue: '',
-            txt_activitycode: '',
-            txt_activitylabel: '',
-            activitycode: '',
-            txt_locationvalue: '',
-            txt_locationlabel: '',
-            jobtargetvalue: '',
-            jobtargetlabel: '',
-            checkitemall: false
-        });
-        this.zonename(e.value);
-        this.projectactivity(e.value);
-    }
-    changeZone = (e) => {
-        this.setState({
-            txt_zonevalue: e,
-            txt_zonelabel: e.label,
-            txt_activityvalue: '',
-            txt_activitycode: '',
-            txt_activitylabel: '',
-            activitycode: '',
-            txt_locationvalue: '',
-            txt_locationlabel: '',
-            jobtargetvalue: '',
-            jobtargetlabel: '',
-            checkitemall: false
-        });
-        this.projectsublocation(this.state.txt_projectnamevalue.value, e.value);
-    }
-    changeActivity = (e) => {
-        this.setState({
-            txt_activityvalue: e,
-            txt_activitycode: e.acode,
-            txt_activitylabel: e.label,
-            activitycode: e.code,
-            txt_locationvalue: '',
-            txt_locationlabel: '',
-            jobtargetvalue: '',
-            jobtargetlabel: '',
-            checkitemall: false
-        });
-        this.employeesubactivity(e.acode, e.code);
-    }
-    changeLocation = (e) => {
-        this.setState({
-            txt_locationvalue: e,
-            txt_locationlabel: e.label,
-            checkitemall: false
-        });
-        this.masterjobid(this.state.txt_projectnamevalue.value, this.state.txt_activitycode, this.state.activitycode, this.state.txt_zonevalue.value, e.code);
-    }
-    changeempname = (e) => {
-        this.setState({
-            pop_empcode: e,
-            pop_fullname: e.name,
-        });
-    }
-    showpopupinput = (e, index, empcode, empname) => {
-        let { item_employee } = this.state;
-        try {
+    // การลาทั้งวัน
+    getMonthLeave = async () => {
+        await new Service().getMonthLeave(getCookie('token')).then(res => {
+            // console.log(JSON.stringify(res.data))
             this.setState({
-                popupinput: e,
-                keyitememp: index,
-                keyempname: empname,
-                keyempcode: empcode,
-                popupotBeforestart: item_employee[index].befotstart,
-                popupotBeforeend: item_employee[index].befotend,
-                pop_befstart: item_employee[index].befstart,
-                pop_befend: item_employee[index].befend,
-                pop_aftstart: item_employee[index].atfstart,
-                pop_aftend: item_employee[index].atfend,
-                pop_otstart: item_employee[index].otstart,
-                pop_otend: item_employee[index].otend,
-                addotinputedit: item_employee[index].befotstart || item_employee[index].befotend ? true : false,
+                txtsickallday_item: res.data,
+                leave_id: '',
+                txtsickallday_date: res.data.leave_day,
+                txtsickallday_fristtime: res.data.leave_fristtime,
+                txtsickallday_lasttime: res.data.leave_lasttime
             });
-        } catch (e) {
-
-        }
-    }
-    showpopupprogress = (e) => {
-        this.setState({
-            popupprogress: e,
-            pop_progressdetail: '',
-            pop_progressvolumn: '',
-            pop_progressunit: ''
-        })
-    }
-    showpopupeditprogress = (e, key) => {
-        let { itemprogress } = this.state;
-        try {
-            this.setState({
-                popupeditprogress: e,
-                idItemprogress: key,
-                pop_progressdetail: itemprogress[key].detail,
-                pop_progressvolumn: itemprogress[key].volumn,
-                pop_progressunit: itemprogress[key].unit,
-            })
-        } catch (error) {
-
-        }
-    }
-    showpopupcreateemployee = (value) => {
-        this.setState({
-            popupcreateemployee: value,
-            pop_empcode: '',
-            pop_fullname: '',
-            popupotBeforestart: '',
-            popupotBeforeend: '',
-            pop_befstart: '',
-            pop_befend: '',
-            pop_aftstart: '',
-            pop_aftend: '',
-            pop_otstart: '',
-            pop_otend: '',
         });
     }
-
-
-    // changvalue
-    confrimchangtime = (index) => {
-        let { item_employee } = this.state;
-        item_employee[index].befotstart = this.state.popupotBeforestart,
-        item_employee[index].befotend = this.state.popupotBeforeend,
-        item_employee[index].befstart = this.state.pop_befstart;
-        item_employee[index].befend = this.state.pop_befend;
-        item_employee[index].atfstart = this.state.pop_aftstart;
-        item_employee[index].atfend = this.state.pop_aftend;
-        item_employee[index].otstart = this.state.pop_otstart;
-        item_employee[index].otend = this.state.pop_otend;
-        item_employee[index].useredit = '1';
-        this.setState({ item_employee });
-        this.showpopupinput(false, index, '', '');
-    }
-    createItemprogress = () => {
-        let { itemprogress } = this.state;
+    addSickallday = (event) => {
         let arr = {
-            detail: this.state.pop_progressdetail,
-            volumn: this.state.pop_progressvolumn,
-            unit: this.state.pop_progressunit,
+            leave_id: this.state.txtsickallday_id,
+            leave_day: this.state.txtsickallday_date,
+            leave_fristtime: this.state.txtsickallday_fristtime,
+            leave_lasttime: this.state.txtsickallday_lasttime,
+            leave_typesave: ''
         }
-        itemprogress.push(arr);
-        this.setState({ itemprogress })
-        this.showpopupprogress(false);
+        this.setState({txtsickallday_item: arr});
+        this.showpopupType3(false, this.state.txtsickallday_id);
+        event.preventDefault();
     }
-    editItemprogress = (key) => {
-        let { itemprogress } = this.state;
-        itemprogress[key].detail = this.state.pop_progressdetail;
-        itemprogress[key].volumn = this.state.pop_progressvolumn;
-        itemprogress[key].unit = this.state.pop_progressunit;
-        this.setState({ itemprogress })
-        this.showpopupeditprogress(false, key);
+    setTypetimesheet = (e) => {
+        this.setState({ typemenu: e });
+        localStorage.setItem('typeTimesheet', e);
+        this.showpopupselecttype(false);
+        if(e==='1'){
+            this.getMonthTimeSheetNormal();
+        }else if(e==='2'){
+            this.getMonthTimeSheetNormalLeave();
+        }else if(e==='3'){
+            this.getMonthLeave();
+        }
     }
-
-    createEmployee = () => {
-        let { item_employee } = this.state;
-        if (item_employee) {
-            if (this.state.pop_empcode && this.state.pop_fullname) {
-                let arr = {
-                    empcode: this.state.pop_empcode.value,
-                    empname: this.state.pop_fullname,
-                    emptype: 'D',
-                    befotstart: this.state.popupotBeforestart,
-                    befotend: this.state.popupotBeforeend,
-                    befstart: this.state.pop_befstart,
-                    befend: this.state.pop_befend,
-                    atfstart: this.state.pop_aftstart,
-                    atfend: this.state.pop_aftend,
-                    otstart: this.state.pop_otstart,
-                    otend: this.state.pop_otend,
-                    useredit: '0',
+    showpopupselecttype = (e) => {
+        this.setState({
+            showpopupselecttype: e,
+        })
+    }
+    logOut = () => {
+        removeCookies('token', { path: '/', domain: '' }); //report.tvothai.com
+        localStorage.clear();
+        window.location.assign('/');
+    }
+    showpopupType3 = (e, id) => {
+        this.setState({ 
+            showpopupType3: e,
+            txtsickallday_id: id
+        });
+    }
+    saveSickleave = () => {
+        if (this.state.txtsickallday_date && this.state.txtsickallday_fristtime && this.state.txtsickallday_lasttime) {
+            new Service().addMonthLeave(getCookie('token'), this.state.txtsickallday_date, this.state.txtsickallday_fristtime, this.state.txtsickallday_lasttime).then(res => {
+                if (res.data.status === '1') {
+                    this.getMonthLeave();
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: res.data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                } else {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: res.data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
-                item_employee.push(arr);
-                this.setState({ item_employee });
-                this.showpopupcreateemployee(false);
-            }
+            });
         } else {
-            if (this.state.pop_empcode && this.state.pop_fullname) {
-                let arr = [{
-                    empcode: this.state.pop_empcode.value,
-                    empname: this.state.pop_fullname,
-                    emptype: 'D',
-                    befotstart: this.state.popupotBeforestart,
-                    befotend: this.state.popupotBeforeend,
-                    befstart: this.state.pop_befstart,
-                    befend: this.state.pop_befend,
-                    atfstart: this.state.pop_aftstart,
-                    atfend: this.state.pop_aftend,
-                    otstart: this.state.pop_otstart,
-                    otend: this.state.pop_otend,
-                    useredit: '0',
-                }]
-                this.setState({ item_employee: arr });
-                this.showpopupcreateemployee(false);
-            }
+
         }
     }
-    removeEmployee = (key) => {
-        let { item_employee } = this.state;
-        Swal.fire({
-            title: 'คุณต้องการลบรายชื่อนี้ออกหรือไม่ ?',
-            text: "",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'ยืนยัน',
-            cancelButtonText: 'ยกเลิก',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                item_employee.splice(key, 1)
-                this.setState({ item_employee });
-            }
-        })
-    }
-    removeProgress = (key) => {
-        let { itemprogress } = this.state;
-        Swal.fire({
-            title: 'คุณต้องการลบงานนี้ออกหรือไม่ ?',
-            text: "",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'ยืนยัน',
-            cancelButtonText: 'ยกเลิก',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                itemprogress.splice(key, 1)
-                this.setState({ itemprogress });
-            }
-        })
-    }
-    applyAll = () => {
-        let { item_employee } = this.state;
-        try {
-            this.setState({ checkitemall: true });
-            if (item_employee[0].befstart && item_employee[0].befend) {
-                for (let x = 0; x < item_employee.length; x++) {
-                    if (item_employee[x].useredit === '0') {
-                        item_employee[x].befotstart = item_employee[0].befotstart;
-                        item_employee[x].befotend = item_employee[0].befotend;
-                        item_employee[x].befstart = item_employee[0].befstart;
-                        item_employee[x].befend = item_employee[0].befend;
-                        item_employee[x].atfstart = item_employee[0].atfstart;
-                        item_employee[x].atfend = item_employee[0].atfend;
-                        item_employee[x].otstart = item_employee[0].otstart;
-                        item_employee[x].otend = item_employee[0].otend;
-                    } else {
-                    }
+    submitSickleave = () => {
+        if (this.state.txtsickallday_date && this.state.txtsickallday_fristtime && this.state.txtsickallday_lasttime) {
+            new Service().addMonthLeaveSubmit(getCookie('token'), this.state.txtsickallday_date, this.state.txtsickallday_fristtime, this.state.txtsickallday_lasttime).then(res => {
+                if (res.data.status === '1') {
+                    this.getMonthLeave();
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: res.data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                } else {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: res.data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
-                this.setState({ item_employee });
-            } else {
-            }
-        } catch (error) {
+            });
+        } else {
 
         }
+        
     }
 
-    btn_confrim = () => {
-        if (getCookie('token')) {
-            if (
-                this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value &&
-                this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
-                this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
-                this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee.length > 0
-            ) {
+    // ทำงานปกติ
+    showpopupType1 = (e) => {
+        this.setState({ 
+            showpopupType1: e,
+            txtworktime_fristtime: '',
+            txtworktime_lasttime: '',
+            txtworktime_project: '',
+            txtworktime_department: '',
+            txtworktime_activity: '',
+            txtworktime_comment: '',
+        });
+    }
+    showpopupeditType1 = (e, key) => {
+        let { txtworktime_item } = this.state;
+        this.setState({ 
+            showpopupeditType1: e,
+            keypopupType1: key,
+            txtworktime_fristtime: txtworktime_item[key].worktime_fristtime,
+            txtworktime_lasttime: txtworktime_item[key].worktime_lasttime,
+            txtworktime_project: txtworktime_item[key].worktime_projectvalue,
+            txtworktime_department: txtworktime_item[key].worktime_departmentvalue,
+            txtworktime_activity: txtworktime_item[key].worktime_activityvalue,
+            txtworktime_comment: txtworktime_item[key].worktime_comment,
+        });
+    }
+    addWorktime = (event) => {
+        let { txtworktime_item } = this.state;
+        if(txtworktime_item){
+            let arr = {
+                TimeSheetManday_Header: '',
+                worktime_fristtime: this.state.txtworktime_fristtime,
+                worktime_lasttime: this.state.txtworktime_lasttime,
+                worktime_projectvalue: this.state.txtworktime_project,
+                worktime_departmentvalue: this.state.txtworktime_department,
+                worktime_activityvalue: this.state.txtworktime_activity,
+                worktime_comment: this.state.txtworktime_comment,
+                worktime_sum: this.state.txtworktime_fristtime <= this.state.txtworktime_lasttime ? (parseFloat(this.state.txtworktime_lasttime) - parseFloat(this.state.txtworktime_fristtime)) : ((parseFloat(this.state.txtworktime_lasttime) + 24) - parseFloat(this.state.txtworktime_fristtime))
+            }
+            txtworktime_item.push(arr);
+            this.setState({txtworktime_item});
+            this.showpopupType1(false)
+        }else{
+            let arr = [{
+                TimeSheetManday_Header: '',
+                worktime_fristtime: this.state.txtworktime_fristtime,
+                worktime_lasttime: this.state.txtworktime_lasttime,
+                worktime_projectvalue: this.state.txtworktime_project,
+                worktime_departmentvalue: this.state.txtworktime_department,
+                worktime_activityvalue: this.state.txtworktime_activity,
+                worktime_comment: this.state.txtworktime_comment,
+                worktime_sum: this.state.txtworktime_fristtime <= this.state.txtworktime_lasttime ? (parseFloat(this.state.txtworktime_lasttime) - parseFloat(this.state.txtworktime_fristtime)) : ((parseFloat(this.state.txtworktime_lasttime) + 24) - parseFloat(this.state.txtworktime_fristtime))
+            }]
+            this.setState({txtworktime_item: arr});
+            this.showpopupType1(false)
+        }
+        event.preventDefault();
+    }
+    editWorktime = (event) => {
+        let { txtworktime_item, keypopupType1 } = this.state;
+        try {
+            txtworktime_item[keypopupType1].worktime_fristtime = this.state.txtworktime_fristtime;
+            txtworktime_item[keypopupType1].worktime_lasttime = this.state.txtworktime_lasttime;
+            txtworktime_item[keypopupType1].worktime_projectvalue = this.state.txtworktime_project;
+            txtworktime_item[keypopupType1].worktime_departmentvalue = this.state.txtworktime_department;
+            txtworktime_item[keypopupType1].worktime_activityvalue = this.state.txtworktime_activity;
+            txtworktime_item[keypopupType1].worktime_comment = this.state.txtworktime_comment;
+            txtworktime_item[keypopupType1].worktime_sum = this.state.txtworktime_fristtime <= this.state.txtworktime_lasttime ? (parseFloat(this.state.txtworktime_lasttime) - parseFloat(this.state.txtworktime_fristtime)) : ((parseFloat(this.state.txtworktime_lasttime) + 24) - parseFloat(this.state.txtworktime_fristtime))
+            this.setState({txtworktime_item});
+            this.showpopupeditType1(false, keypopupType1);
+        } catch (error) {
+            
+        }
+        event.preventDefault();
+    }
+    removeType1 = (key) => {
+        let { txtworktime_item } = this.state;
+        Swal.fire({
+            title: 'คุณต้องการลบรายการนี้ออกหรือไม่ ?',
+            text: "",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                txtworktime_item.splice(key, 1)
+                this.setState({ txtworktime_item });
+            }
+        })
+    }
+    saveType1 = () => {
+        new Service().addMonthTimeSheetSave(getCookie('token'), this.state.txtworktime_date,  this.state.txtworktime_item).then(res => {
+            // console.log(JSON.stringify(res.data))
+            if (res.data.status === '1') {
                 Swal.fire({
-                    title: 'การรายงานเท็จถือเป็นความผิดวินัยอย่างร้ายแรง และมีบทลงโทษสูงสุดตามกฎระเบียบของบริษัท',
-                    text: "",
-                    icon: 'warning',
-                    showCloseButton: true,
-                    showCancelButton: false,
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'ยอมรับ'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        //////////
-                        new Service().savetimesheet(
-                            getCookie('token'),
-                            this.state.txt_locationvalue.code, // H
-                            this.state.EmployeeCode, // H
-                            this.state.txt_date, // H
-                            this.state.txt_projectnamevalue.value, // H
-                            this.state.txt_zonevalue.value, // H
-                            this.state.txt_projectnamevalue.activity, // H
-                            this.state.JobCode, // H
-                            this.state.txt_activityvalue.code,// H
-                            this.state.CostCenterCode, // H
-                            this.state.jobtargetvalue, // H
-                            this.state.jobtargetlabel, // H
-                            this.state.txt_actual, // H
-                            this.state.jobtargetlabel, // H
-                            this.state.item_employee,
-                            this.state.itemprogress
-                        ).then(res => {
-                            if (res.data.status === '1') {
-                                Swal.fire({
-                                    position: 'center',
-                                    icon: 'success',
-                                    title: res.data.message,
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                })
-                                window.location.href = '/timesheet'
-                            } else {
-                                Swal.fire({
-                                    position: 'center',
-                                    icon: 'error',
-                                    title: res.data.message,
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                })
-                            }
-                        })
-                        ////////
-                    }
+                    position: 'center',
+                    icon: 'success',
+                    title: res.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
                 })
             } else {
                 Swal.fire({
                     position: 'center',
-                    icon: 'warning',
-                    title: 'กรุณากรอกข้อมูลให้ครบ',
+                    icon: 'error',
+                    title: res.data.message,
                     showConfirmButton: false,
                     timer: 1500
                 })
             }
-        } else {
-            Swal.fire({
-                position: 'center',
-                icon: 'warning',
-                title: 'Cookie หมดอายุ กรุณาลงชื่อเข้าใช้งานใหม่',
-                showConfirmButton: false,
-                timer: 1500
-            })
+        })
+    }
+    submitType1 = () => {
+        if(this.state.txtworktime_item){
+            let sumx = 0;
+            for(let x=0;x<this.state.txtworktime_item.length;x++){
+                sumx += this.state.txtworktime_item[x].worktime_sum;
+            }
+            if(sumx >= 9){
+                new Service().addMonthTimeSheetSubmit(getCookie('token'), this.state.txtworktime_date,  this.state.txtworktime_item).then(res => {
+                    if (res.data.status === '1') {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: res.data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        this.getMonthTimeSheetNormal();
+                    } else {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: res.data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                })
+            }else{
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'จำนวนชั่วโมงไม่ครบ',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }
         }
     }
-    trunOnot = (e) => {
-        this.setState({ 
-            addotinput: e,
-            popupotBeforestart: '',
-            popupotBeforeend: '',
-         })
+    getMonthTimeSheetNormal = async () => {
+        await new Service().getMonthTimeSheetNormal(getCookie('token')).then(res => {
+            // console.log(JSON.stringify(res.data))
+            this.setState({
+                txtworktime_status: res.data.H_status,
+                txtworktime_item: res.data.H_body
+            });
+        });
     }
-    trunOnotedit = (e) => {
-        this.setState({ 
-            addotinputedit: e,
-            popupotBeforestart: '',
-            popupotBeforeend: '',
-         })
+
+    // ลาบางช่วงเวลา
+    addWorkLeavetime = (event) => {
+        let { txtworktimeleave_item } = this.state;
+        if(txtworktimeleave_item){
+            let arr = {
+                worktimeleave_date: this.state.txtworktimeleave_date,
+                worktimeleave_fristtime: this.state.txtworktimeleave_fristtime,
+                worktimeleave_lasttime: this.state.txtworktimeleave_lasttime,
+                worktimeleave_sfristtime: this.state.txtworktimeleave_sfristtime,
+                worktimeleave_elasttime: this.state.txtworktimeleave_elasttime,
+                worktimeleave_project: this.state.txtworktimeleave_project,
+                worktimeleave_department: this.state.txtworktimeleave_department,
+                worktimeleave_activity: this.state.txtworktimeleave_activity,
+                worktimeleave_comment: this.state.txtworktimeleave_comment,
+                worktimeleave_sumL: this.state.txtworktimeleave_fristtime <= this.state.txtworktimeleave_lasttime ? (parseFloat(this.state.txtworktimeleave_lasttime) - parseFloat(this.state.txtworktimeleave_fristtime)) : ((parseFloat(this.state.txtworktimeleave_lasttime) + 24) - parseFloat(this.state.txtworktimeleave_fristtime)),
+                worktimeleave_sumN: this.state.txtworktimeleave_sfristtime <= this.state.txtworktimeleave_elasttime ? (parseFloat(this.state.txtworktimeleave_elasttime) - parseFloat(this.state.txtworktimeleave_sfristtime)) : ((parseFloat(this.state.txtworktimeleave_elasttime) + 24) - parseFloat(this.state.txtworktimeleave_sfristtime))
+            }
+            txtworktimeleave_item.push(arr);
+            this.setState({txtworktimeleave_item});
+            this.showpopupType2(false)
+        }else{
+            let arr = [{
+                worktimeleave_date: this.state.txtworktimeleave_date,
+                worktimeleave_fristtime: this.state.txtworktimeleave_fristtime,
+                worktimeleave_lasttime: this.state.txtworktimeleave_lasttime,
+                worktimeleave_sfristtime: this.state.txtworktimeleave_sfristtime,
+                worktimeleave_elasttime: this.state.txtworktimeleave_elasttime,
+                worktimeleave_project: this.state.txtworktimeleave_project,
+                worktimeleave_department: this.state.txtworktimeleave_department,
+                worktimeleave_activity: this.state.txtworktimeleave_activity,
+                worktimeleave_comment: this.state.txtworktimeleave_comment,
+                worktimeleave_sumL: this.state.txtworktimeleave_fristtime <= this.state.txtworktimeleave_lasttime ? (parseFloat(this.state.txtworktimeleave_lasttime) - parseFloat(this.state.txtworktimeleave_fristtime)) : ((parseFloat(this.state.txtworktimeleave_lasttime) + 24) - parseFloat(this.state.txtworktimeleave_fristtime)),
+                worktimeleave_sumN: this.state.txtworktimeleave_sfristtime <= this.state.txtworktimeleave_elasttime ? (parseFloat(this.state.txtworktimeleave_elasttime) - parseFloat(this.state.txtworktimeleave_sfristtime)) : ((parseFloat(this.state.txtworktimeleave_elasttime) + 24) - parseFloat(this.state.txtworktimeleave_sfristtime))
+            }]
+            this.setState({txtworktimeleave_item: arr});
+            this.showpopupType2(false)
+        }
+        event.preventDefault();
     }
+    showpopupType2 = (e) => {
+        this.setState({
+            showpopupType2: e,
+            txtworktimeleave_fristtime: '',
+            txtworktimeleave_lasttime: '',
+            txtworktimeleave_sfristtime: '',
+            txtworktimeleave_elasttime: '',
+            txtworktimeleave_project: '',
+            txtworktimeleave_department: '',
+            txtworktimeleave_activity: '',
+            txtworktimeleave_comment: '',
+        });
+    }
+    removeType2 = (key) => {
+        let { txtworktimeleave_item } = this.state;
+        Swal.fire({
+            title: 'คุณต้องการลบรายการนี้ออกหรือไม่ ?',
+            text: "",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                txtworktimeleave_item.splice(key, 1)
+                this.setState({ txtworktimeleave_item });
+            }
+        })
+    }
+    showpopupeditType2 = (e, key) => {
+        let { txtworktimeleave_item } = this.state;
+        this.setState({ 
+            showpopupeditType2: e,
+            keypopupeditType2: key,
+            txtworktimeleave_date: txtworktimeleave_item[key].worktimeleave_date,
+            txtworktimeleave_fristtime: txtworktimeleave_item[key].worktimeleave_fristtime,
+            txtworktimeleave_lasttime: txtworktimeleave_item[key].worktimeleave_lasttime,
+            txtworktimeleave_sfristtime: txtworktimeleave_item[key].worktimeleave_sfristtime,
+            txtworktimeleave_elasttime: txtworktimeleave_item[key].worktimeleave_elasttime,
+            txtworktimeleave_project: txtworktimeleave_item[key].worktimeleave_project,
+            txtworktimeleave_department: txtworktimeleave_item[key].worktimeleave_department,
+            txtworktimeleave_activity: txtworktimeleave_item[key].worktimeleave_activity,
+            txtworktimeleave_comment: txtworktimeleave_item[key].worktimeleave_comment,
+        });
+    }
+    editWorkLeavetime = (event) => {
+        let { txtworktimeleave_item, keypopupeditType2 } = this.state;
+        try {
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_date = this.state.txtworktimeleave_date;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_fristtime = this.state.txtworktimeleave_fristtime,
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_lasttime = this.state.txtworktimeleave_lasttime,
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_sfristtime = this.state.txtworktimeleave_sfristtime;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_elasttime = this.state.txtworktimeleave_elasttime;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_project = this.state.txtworktimeleave_project;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_department = this.state.txtworktimeleave_department;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_activity = this.state.txtworktimeleave_activity;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_comment = this.state.txtworktimeleave_comment;
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_sumL = this.state.txtworktimeleave_fristtime <= this.state.txtworktimeleave_lasttime ? (parseFloat(this.state.txtworktimeleave_lasttime) - parseFloat(this.state.txtworktimeleave_fristtime)) : ((parseFloat(this.state.txtworktimeleave_lasttime) + 24) - parseFloat(this.state.txtworktimeleave_fristtime)),
+            txtworktimeleave_item[keypopupeditType2].worktimeleave_sumN = this.state.txtworktimeleave_sfristtime <= this.state.txtworktimeleave_elasttime ? (parseFloat(this.state.txtworktimeleave_elasttime) - parseFloat(this.state.txtworktimeleave_sfristtime)) : ((parseFloat(this.state.txtworktimeleave_elasttime) + 24) - parseFloat(this.state.txtworktimeleave_sfristtime))
+            this.setState({txtworktimeleave_item});
+            this.showpopupeditType2(false, keypopupeditType2);
+        } catch (error) {
+            
+        }
+        event.preventDefault();
+    }
+    saveType2 = () => {
+        new Service().addMonthTimeSheetLeaveSave(getCookie('token'), this.state.txtworktimeleave_date,  this.state.txtworktimeleave_item).then(res => {
+            // console.log(JSON.stringify(res.data))
+            if (res.data.status === '1') {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: res.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            } else {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: res.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }
+        })
+    }
+    submitType2 = () => {
+        if(this.state.txtworktimeleave_item){
+            let sumL = 0;
+            let sumN = 0;
+            for(let x=0;x<this.state.txtworktimeleave_item.length;x++){
+                sumL += parseFloat(this.state.txtworktimeleave_item[x].worktimeleave_sumL);
+                sumN += parseFloat(this.state.txtworktimeleave_item[x].worktimeleave_sumN);
+            }
+            let sum = sumL+sumN;
+            if(sum >= 9){
+                new Service().addMonthTimeSheetLeaveSubmit(getCookie('token'), this.state.txtworktimeleave_date,  this.state.txtworktimeleave_item).then(res => {
+                    if (res.data.status === '1') {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: res.data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        this.getMonthTimeSheetNormalLeave();
+                    } else {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: res.data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                })
+            }else{
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'จำนวนชั่วโมงไม่ครบ',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }
+        }
+    }
+    getMonthTimeSheetNormalLeave = async () => {
+        await new Service().getMonthTimeSheetNormalLeave(getCookie('token')).then(res => {
+            // console.log(JSON.stringify(res.data))
+            this.setState({
+                txtworktimeleave_status: res.data.H_status,
+                txtworktimeleave_item: res.data.H_body
+            });
+        });
+    }
+
     // window.onbeforeunload = function () {return false;}
     render() {
-        let checkitememp = this.state.item_employee ? this.state.item_employee.filter((item) => {
-            return item.empcode === '' || item.empname === '' || item.befstart === '' || item.befend === '' || item.atfstart === '' || item.atfend === ''
-        }) : []
-        let rowitemprogress = 1;
+        let sumtime = this.state.txtsickallday_fristtime <= this.state.txtsickallday_lasttime ? (parseFloat(this.state.txtsickallday_lasttime) - parseFloat(this.state.txtsickallday_fristtime)) : ((parseFloat(this.state.txtsickallday_lasttime) + 24) - parseFloat(this.state.txtsickallday_fristtime))
+        // console.log(this.state.txtworktimeleave_status)
         return (
             <>
                 <Head>
-                    <title>TIMESHEET</title>
+                    <title>TIMESHEET รายเดือน</title>
                     <link rel="icon" type="image/png" href="../logo.png" />
                     <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=device-dpi, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"></meta>
                 </Head>
-                {/* <Navbarx /> */}
-                {/* <hr style={{ height: 5, backgroundColor: '#8c1e21' }} /> */}
-                <div className={styles.row} style={{}}>
 
-                    {/* Item Employee Edit */}
-                    <Modal
-                        show={this.state.popupinput}
-                        backdrop="static"
-                        keyboard={false}
-                        StrictMode={true}
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered
-                    >
-                        <Modal.Header>
-                            <div><strong>กำหนดเวลาทำงาน</strong></div>
-                            <div><strong>{this.state.keyempname}</strong></div>
-                        </Modal.Header>
+                {/* ลาทั้งวัน */}
+                <Modal
+                    show={this.state.showpopupType3}
+                    backdrop="static"
+                    keyboard={false}
+                    StrictMode={true}
+                    onHide={() => this.showpopupType3(false, this.state.txtsickallday_id)}
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                >
+                    <Modal.Header>
+                        <div><strong>รายละเอียดการลา</strong></div>
+                    </Modal.Header>
+                    <form onSubmit={this.addSickallday} style={{ display: 'contents' }} autoComplete="on">
                         <Modal.Body>
                             <div className={styles.row} style={{ fontSize: 15 }}>
                                 <div className={styles.row} style={{ marginBottom: 10 }}>
                                     <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <span onClick={() => this.trunOnotedit(!this.state.addotinputedit)}>
-                                            <i className={this.state.addotinputedit ? 'fa-solid fa-square-check squareboxcheck' : 'fa-solid fa-square squareboxuncheck'}></i> <strong>โอที</strong> (ก่อนเริ่ม)
-                                        </span>
+                                        <label>วันที่*</label>
+                                        <input type="date" className="form-control" value={this.state.txtsickallday_date} disabled={true} readOnly={true} onChange={(e) => this.setState({ txtsickallday_date: e.target.value })} />
                                     </div>
-                                    {
-                                        this.state.addotinputedit ?
-                                            <div className={styles.row} style={{ marginBottom: 10 }}>
-                                                <div style={{ width: '50%', float: 'left' }}>
-                                                    <label>เริ่ม</label>
-                                                    <input type="time" placeholder='06:00' className="form-control" style={{ width: '97%' }} value={this.state.popupotBeforestart} onChange={(e) => this.setState({ popupotBeforestart: e.target.value })}/>
-                                                </div>
-                                                <div style={{ width: '50%', float: 'right' }}>
-                                                    <label>สิ้นสุด</label>
-                                                    <input type="time" placeholder='08:00' min={this.state.popupotBeforestart} className="form-control" value={this.state.popupotBeforeend} onChange={(e) => this.setState({ popupotBeforeend: e.target.value })}/>
-                                                </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 9 }}>
+                                        ช่วงที่ลา*
+                                        <div className={styles.row}>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>เวลาเริ่ม</label>
+                                                <input type="time" required={true} value={this.state.txtsickallday_fristtime} onChange={(e) => this.setState({ txtsickallday_fristtime: e.target.value })} className="form-control" style={{ width: '97%' }} />
                                             </div>
-                                            :
-                                            <></>
-                                    }
-                                </div>
-                                <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงแรก</strong></div>
-                                    <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่ม</label>
-                                        <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
-                                    </div>
-                                    <div style={{ width: '50%', float: 'right' }}>
-                                        <label>สิ้นสุด</label>
-                                        <input type="time" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
-                                    </div>
-                                </div>
-                                <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงหลัง</strong></div>
-                                    <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่ม</label>
-                                        <input type="time" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
-                                    </div>
-                                    <div style={{ width: '50%', float: 'right' }}>
-                                        <label>สิ้นสุด</label>
-                                        <input type="time" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
-                                    </div>
-                                </div>
-                                <div className={styles.row}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>โอที</strong> (หลังเลิกงาน)</div>
-                                    <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่ม</label>
-                                        <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
-                                    </div>
-                                    <div style={{ width: '50%', float: 'right' }}>
-                                        <label>สิ้นสุด</label>
-                                        <input type="time" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
-                                    </div>
-                                </div>
-                            </div>
-                        </Modal.Body>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: '0.75rem', borderTop: '1px solid #dee2e6', borderBottomRightRadius: 'calc(0.3rem - 1px)', borderBottomLeftRadius: 'calc(0.3rem - 1px)' }}>
-                            <div className={styles.row} style={{ width: '100%' }}>
-                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
-                                <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    {
-                                        // FL
-                                        this.state.popupotBeforestart && this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && this.state.pop_otstart && this.state.pop_otend ?
-                                            (this.state.popupotBeforeend <= this.state.pop_befstart) &&
-                                            (this.state.pop_befstart <= this.state.pop_befend) &&
-                                            (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                            (this.state.pop_aftstart <= this.state.pop_aftend) &&
-                                            (this.state.pop_aftend <= this.state.pop_otstart) ?
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
-                                                : 
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
-                                            :
-                                            // F
-                                            this.state.popupotBeforestart && this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && !this.state.pop_otstart && !this.state.pop_otend ?
-                                                (this.state.popupotBeforeend <= this.state.pop_befstart) &&
-                                                (this.state.pop_befstart <= this.state.pop_befend) &&
-                                                (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                                (this.state.pop_aftstart <= this.state.pop_aftend) ?    
-                                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
-                                                    : 
-                                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
-                                                :
-                                                // L
-                                                !this.state.popupotBeforestart && !this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && this.state.pop_otstart && this.state.pop_otend ?
-                                                    (this.state.pop_befstart <= this.state.pop_befend) &&
-                                                    (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                                    (this.state.pop_aftstart <= this.state.pop_aftend) &&
-                                                    (this.state.pop_aftend <= this.state.pop_otstart) ? 
-                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
-                                                        :
-                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
-                                                    :
-                                                    // Nomal
-                                                    !this.state.popupotBeforestart && !this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && !this.state.pop_otstart && !this.state.pop_otend ?
-                                                        (this.state.pop_befstart <= this.state.pop_befend) &&
-                                                        (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                                        (this.state.pop_aftstart <= this.state.pop_aftend) ? 
-                                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.confrimchangtime(this.state.keyitememp)}>บันทึกข้อมูล</button>
-                                                            :
-                                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
-                                                        :
-                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ครบ)</button>
-                                    }
-                                </div>
-                                <div className="col-sm-12 col-md-4 col-lg-4">
-                                    <button variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupinput(false, this.state.keyitememp, '', '')}>ยกเลิก</button>
-                                </div>
-                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
-                            </div>
-
-                        </div>
-                    </Modal>
-                    {/* Item Progress */}
-                    <Modal
-                        show={this.state.popupprogress}
-                        backdrop="static"
-                        keyboard={false}
-                        StrictMode={true}
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered
-                    >
-                        <Modal.Header>
-                            <div><strong>เพิ่มรายละเอียดงาน</strong></div>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <div className={styles.row} style={{ fontSize: 15 }}>
-                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
-                                    <label>รายละเอียด</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressdetail} onChange={(e) => this.setState({ pop_progressdetail: e.target.value })} />
-                                </div>
-                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
-                                    <label>ปริมาณ</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressvolumn} onChange={(e) => this.setState({ pop_progressvolumn: e.target.value.replace(/[^0-9]/g, '') })} />
-                                </div>
-                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
-                                    <label>หน่วย</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressunit} onChange={(e) => this.setState({ pop_progressunit: e.target.value })} />
-                                </div>
-                            </div>
-                        </Modal.Body>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: '0.75rem', borderTop: '1px solid #dee2e6', borderBottomRightRadius: 'calc(0.3rem - 1px)', borderBottomLeftRadius: 'calc(0.3rem - 1px)' }}>
-                            <div className={styles.row} style={{ width: '100%' }}>
-                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
-                                <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    {
-                                        this.state.pop_progressdetail && this.state.pop_progressvolumn && this.state.pop_progressunit ?
-                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createItemprogress()}>สร้างรายละเอียดงาน</button>
-                                            :
-                                            <button type="button" variant="primary" className="btn btn-danger" disabled={true} style={{ width: '100%' }} >สร้างรายละเอียดงาน</button>
-                                    }
-
-                                </div>
-                                <div className="col-sm-12 col-md-4 col-lg-4">
-                                    <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupprogress(!this.state.popupprogress)}>ยกเลิก</button>
-                                </div>
-                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
-                            </div>
-
-                        </div>
-                    </Modal>
-                    {/* Edit Progress */}
-                    <Modal
-                        show={this.state.popupeditprogress}
-                        backdrop="static"
-                        keyboard={false}
-                        StrictMode={true}
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered
-                    >
-                        <Modal.Header>
-                            <div><strong>แก้ไขรายละเอียดงาน</strong></div>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <div className={styles.row} style={{ fontSize: 15 }}>
-                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
-                                    <label>รายละเอียด</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressdetail} onChange={(e) => this.setState({ pop_progressdetail: e.target.value })} />
-                                </div>
-                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
-                                    <label>ปริมาณ</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressvolumn} onChange={(e) => this.setState({ pop_progressvolumn: e.target.value.replace(/[^0-9]/g, '') })} />
-                                </div>
-                                <div className="col-lg-6 col-md-6 col-sm-12" style={{ marginBottom: 10 }}>
-                                    <label>หน่วย</label>
-                                    <input type="text" className="form-control" value={this.state.pop_progressunit} onChange={(e) => this.setState({ pop_progressunit: e.target.value })} />
-                                </div>
-                            </div>
-                        </Modal.Body>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: '0.75rem', borderTop: '1px solid #dee2e6', borderBottomRightRadius: 'calc(0.3rem - 1px)', borderBottomLeftRadius: 'calc(0.3rem - 1px)' }}>
-                            <div className={styles.row} style={{ width: '100%' }}>
-                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
-                                <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                    {
-                                        this.state.pop_progressdetail && this.state.pop_progressvolumn && this.state.pop_progressunit ?
-                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.editItemprogress(this.state.idItemprogress)}>บันทึกการแก้ไข</button>
-                                            :
-                                            <button type="button" variant="primary" className="btn btn-danger" disabled={true} style={{ width: '100%' }} >บันทึกการแก้ไข</button>
-                                    }
-
-                                </div>
-                                <div className="col-sm-12 col-md-4 col-lg-4">
-                                    <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupeditprogress(false, this.state.idItemprogress)}>ยกเลิก</button>
-                                </div>
-                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
-                            </div>
-
-                        </div>
-                    </Modal>
-                    {/* Item Employee */}
-                    <Modal
-                        show={this.state.popupcreateemployee}
-                        backdrop="static"
-                        keyboard={false}
-                        StrictMode={true}
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered
-                    >
-                        <Modal.Header>
-                            <div><strong>กำหนดเวลาทำงาน</strong></div>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <div className={styles.row} style={{ fontSize: 15 }}>
-                                <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <label><strong>พนักงาน</strong></label>
-                                        <Select
-                                            options={this.state.optionempname}
-                                            value={this.state.pop_empcode}
-                                            onChange={(e) => this.changeempname(e)}
-                                            styles={stylesselect}
-                                        />
-                                    </div>
-                                </div>
-                                <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">
-                                        <span onClick={() => this.trunOnot(!this.state.addotinput)}>
-                                            <i className={this.state.addotinput ? 'fa-solid fa-square-check squareboxcheck' : 'fa-solid fa-square squareboxuncheck'}></i> <strong>โอที</strong> (ก่อนเริ่ม)
-                                        </span>
-                                    </div>
-                                    {
-                                        this.state.addotinput ?
-                                            <div className={styles.row} style={{ marginBottom: 10 }}>
-                                                <div style={{ width: '50%', float: 'left' }}>
-                                                    <label>เริ่ม</label>
-                                                    <input type="time" placeholder='06:00' className="form-control" style={{ width: '97%' }} value={this.state.popupotBeforestart} onChange={(e) => this.setState({ popupotBeforestart: e.target.value })}/>
-                                                </div>
-                                                <div style={{ width: '50%', float: 'right' }}>
-                                                    <label>สิ้นสุด</label>
-                                                    <input type="time" placeholder='08:00' min={this.state.popupotBeforestart} className="form-control" value={this.state.popupotBeforeend} onChange={(e) => this.setState({ popupotBeforeend: e.target.value })}/>
-                                                </div>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>สิ้นสุด</label>
+                                                <input type="time" required={true} value={this.state.txtsickallday_lasttime} onChange={(e) => this.setState({ txtsickallday_lasttime: e.target.value })} className="form-control" style={{ width: '97%' }} />
                                             </div>
-                                            :
-                                            <></>
-                                    }
-                                </div>
-
-                                <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงแรก</strong></div>
-                                    <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่ม</label>
-                                        <input type="time" placeholder='09:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_befstart} onChange={(e) => this.setState({ pop_befstart: e.target.value })} />
+                                        </div>
                                     </div>
-                                    <div style={{ width: '50%', float: 'right' }}>
-                                        <label>สิ้นสุด</label>
-                                        <input type="time" placeholder='12:00' className="form-control" value={this.state.pop_befend} onChange={(e) => this.setState({ pop_befend: e.target.value })} />
-                                    </div>
-                                </div>
-                                <div className={styles.row} style={{ marginBottom: 10 }}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>ช่วงหลัง</strong></div>
-                                    <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่ม</label>
-                                        <input type="time" placeholder='13:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_aftstart} onChange={(e) => this.setState({ pop_aftstart: e.target.value })} />
-                                    </div>
-                                    <div style={{ width: '50%', float: 'right' }}>
-                                        <label>สิ้นสุด</label>
-                                        <input type="time" placeholder='17:00' className="form-control" value={this.state.pop_aftend} onChange={(e) => this.setState({ pop_aftend: e.target.value })} />
-                                    </div>
-                                </div>
-                                <div className={styles.row}>
-                                    <div className="col-lg-12 col-md-12 col-sm-12"><strong>โอที</strong> (หลังเลิกงาน)</div>
-                                    <div style={{ width: '50%', float: 'left' }}>
-                                        <label>เริ่ม</label>
-                                        <input type="time" placeholder='20:00' className="form-control" style={{ width: '97%' }} value={this.state.pop_otstart} onChange={(e) => this.setState({ pop_otstart: e.target.value })} />
-                                    </div>
-                                    <div style={{ width: '50%', float: 'right' }}>
-                                        <label>สิ้นสุด</label>
-                                        <input type="time" placeholder='22:00' className="form-control" value={this.state.pop_otend} onChange={(e) => this.setState({ pop_otend: e.target.value })} />
+                                    <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 9 }}>
+                                        <div>เวลารวม {sumtime}</div>
                                     </div>
                                 </div>
                             </div>
@@ -900,335 +620,649 @@ export default class BI extends Component {
                             <div className={styles.row} style={{ width: '100%' }}>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                                 <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
-                                {
-                                        // FL
-                                        this.state.popupotBeforestart && this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && this.state.pop_otstart && this.state.pop_otend ?
-                                            (this.state.popupotBeforeend <= this.state.pop_befstart) &&
-                                            (this.state.pop_befstart <= this.state.pop_befend) &&
-                                            (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                            (this.state.pop_aftstart <= this.state.pop_aftend) &&
-                                            (this.state.pop_aftend <= this.state.pop_otstart) ?
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
-                                                : 
-                                                <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
-                                            :
-                                            // F
-                                            this.state.popupotBeforestart && this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && !this.state.pop_otstart && !this.state.pop_otend ?
-                                                (this.state.popupotBeforeend <= this.state.pop_befstart) &&
-                                                (this.state.pop_befstart <= this.state.pop_befend) &&
-                                                (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                                (this.state.pop_aftstart <= this.state.pop_aftend) ?    
-                                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
-                                                    : 
-                                                    <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
-                                                :
-                                                // L
-                                                !this.state.popupotBeforestart && !this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && this.state.pop_otstart && this.state.pop_otend ?
-                                                    (this.state.pop_befstart <= this.state.pop_befend) &&
-                                                    (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                                    (this.state.pop_aftstart <= this.state.pop_aftend) &&
-                                                    (this.state.pop_aftend <= this.state.pop_otstart) ? 
-                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
-                                                        :
-                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
-                                                    :
-                                                    // Nomal
-                                                    !this.state.popupotBeforestart && !this.state.popupotBeforeend && this.state.pop_befstart && this.state.pop_befend && this.state.pop_aftstart && this.state.pop_aftend && !this.state.pop_otstart && !this.state.pop_otend ?
-                                                        (this.state.pop_befstart <= this.state.pop_befend) &&
-                                                        (this.state.pop_befend <= this.state.pop_aftstart) &&
-                                                        (this.state.pop_aftstart <= this.state.pop_aftend) ? 
-                                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} onClick={() => this.createEmployee()}>บันทึกข้อมูล</button>
-                                                            :
-                                                            <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ถูกต้อง)</button>
-                                                        :
-                                                        <button type="button" variant="primary" className="btn btn-danger" style={{ width: '100%' }} disabled={true}>บันทึกข้อมูล (เวลาไม่ครบ)</button>
-                                    }
+                                    <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
                                 </div>
                                 <div className="col-sm-12 col-md-4 col-lg-4">
-                                    <button variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupcreateemployee(false)}>ยกเลิก</button>
+                                    <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupType3(false, this.state.txtsickallday_id)}>ยกเลิก</button>
                                 </div>
                                 <div className="col-sm-12 col-md-2 col-lg-2"></div>
                             </div>
-
                         </div>
-                    </Modal>
-                    {/* End */}
+                    </form>
+                </Modal>
 
-
-                    {/* Header */}
-                    <div className="page-header">
-                        <div className="title-page">
-                            <div>
-                                <Image src={logo} width={45} height={50} alt="logo"></Image>
+                {/* ทำงานปกติ */}
+                <Modal
+                    show={this.state.showpopupType1}
+                    backdrop="static"
+                    keyboard={false}
+                    StrictMode={true}
+                    onHide={() => this.showpopupType1(false)}
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                >
+                    <Modal.Header>
+                        <div><strong>เวลาปฎิบัติงาน</strong></div>
+                    </Modal.Header>
+                    <form onSubmit={this.addWorktime} style={{ display: 'contents' }} autoComplete="on">
+                        <Modal.Body>
+                            <div className={styles.row} style={{ fontSize: 15 }}>
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>วันที่*</label>
+                                        <input type="date" className="form-control" value={this.state.txtworktime_date} disabled={true} readOnly={true} onChange={(e) => this.setState({ txtworktime_date: e.target.value })} />
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 9 }}>
+                                        เวลาทำงาน*
+                                        <div className={styles.row}>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>เวลาเริ่ม</label>
+                                                <input type="time" required={true} value={this.state.txtworktime_fristtime} onChange={(e) => this.setState({ txtworktime_fristtime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>สิ้นสุด</label>
+                                                <input type="time" required={true} min={this.state.txtworktime_fristtime} value={this.state.txtworktime_lasttime} onChange={(e) => this.setState({ txtworktime_lasttime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>โครงการ*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_project} onChange={(e) => this.setState({ txtworktime_project: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>แผนก*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_department} onChange={(e) => this.setState({ txtworktime_department: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>กิจกรรม*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_activity} onChange={(e) => this.setState({ txtworktime_activity: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>หมายเหตุ</label>
+                                        <input type="text" className="form-control"  value={this.state.txtworktime_comment} onChange={(e) => this.setState({ txtworktime_comment: e.target.value })}/>
+                                    </div>
+                                </div>
                             </div>
-                            {/* <div>
-                                <h2>บันทึกการทำงาน</h2>
-                            </div> */}
+                        </Modal.Body>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: '0.75rem', borderTop: '1px solid #dee2e6', borderBottomRightRadius: 'calc(0.3rem - 1px)', borderBottomLeftRadius: 'calc(0.3rem - 1px)' }}>
+                            <div className={styles.row} style={{ width: '100%' }}>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                                <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
+                                    <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                </div>
+                                <div className="col-sm-12 col-md-4 col-lg-4">
+                                    <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupType1(false)}>ยกเลิก</button>
+                                </div>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                            </div>
+                        </div>
+                    </form>
+                </Modal>
+                {/* แก้ไข ทำงานปกติ */}
+                <Modal
+                    show={this.state.showpopupeditType1}
+                    backdrop="static"
+                    keyboard={false}
+                    StrictMode={true}
+                    onHide={() => this.showpopupeditType1(false, this.state.keypopupType1)}
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                >
+                    <Modal.Header>
+                        <div><strong>เวลาปฎิบัติงาน</strong></div>
+                    </Modal.Header>
+                    <form onSubmit={this.editWorktime} style={{ display: 'contents' }} autoComplete="on">
+                        <Modal.Body>
+                            <div className={styles.row} style={{ fontSize: 15 }}>
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>วันที่*</label>
+                                        <input type="date" className="form-control" value={this.state.txtworktime_date} disabled={true} readOnly={true} onChange={(e) => this.setState({ txtworktime_date: e.target.value })} />
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 9 }}>
+                                        เวลาทำงาน*
+                                        <div className={styles.row}>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>เวลาเริ่ม</label>
+                                                <input type="time" required={true} value={this.state.txtworktime_fristtime} onChange={(e) => this.setState({ txtworktime_fristtime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>สิ้นสุด</label>
+                                                <input type="time" required={true} min={this.state.txtworktime_fristtime} value={this.state.txtworktime_lasttime} onChange={(e) => this.setState({ txtworktime_lasttime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>โครงการ*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_project} onChange={(e) => this.setState({ txtworktime_project: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>แผนก*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_department} onChange={(e) => this.setState({ txtworktime_department: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>กิจกรรม*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktime_activity} onChange={(e) => this.setState({ txtworktime_activity: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>หมายเหตุ</label>
+                                        <input type="text" className="form-control"  value={this.state.txtworktime_comment} onChange={(e) => this.setState({ txtworktime_comment: e.target.value })}/>
+                                    </div>
+                                </div>
+                            </div>
+                        </Modal.Body>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: '0.75rem', borderTop: '1px solid #dee2e6', borderBottomRightRadius: 'calc(0.3rem - 1px)', borderBottomLeftRadius: 'calc(0.3rem - 1px)' }}>
+                            <div className={styles.row} style={{ width: '100%' }}>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                                <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
+                                    <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                </div>
+                                <div className="col-sm-12 col-md-4 col-lg-4">
+                                    <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupeditType1(false, this.state.keypopupType1)}>ยกเลิก</button>
+                                </div>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                            </div>
+                        </div>
+                    </form>
+                </Modal>
+
+                {/* ลาบางช่วงเวลา */}
+                <Modal
+                    show={this.state.showpopupType2}
+                    backdrop="static"
+                    keyboard={false}
+                    StrictMode={true}
+                    onHide={() => this.showpopupType2(false)}
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                >
+                    <Modal.Header>
+                        <div><strong>เวลาปฎิบัติงาน</strong></div>
+                    </Modal.Header>
+                    <form onSubmit={this.addWorkLeavetime} style={{ display: 'contents' }} autoComplete="on">
+                        <Modal.Body>
+                            <div className={styles.row} style={{ fontSize: 15 }}>
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>วันที่*</label>
+                                        <input type="date" className="form-control" value={this.state.txtworktimeleave_date} disabled={true} readOnly={true} onChange={(e) => this.setState({ txtworktimeleave_date: e.target.value })} />
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 9 }}>
+                                        ช่วงเวลาที่ลา
+                                        <div className={styles.row}>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>เริ่ม</label>
+                                                <input type="time" value={this.state.txtworktimeleave_fristtime} onChange={(e) => this.setState({ txtworktimeleave_fristtime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>สิ้นสุด</label>
+                                                <input type="time" required={this.state.txtworktimeleave_fristtime ? true : false} min={this.state.txtworktimeleave_fristtime} value={this.state.txtworktimeleave_lasttime} onChange={(e) => this.setState({ txtworktimeleave_lasttime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 9 }}>
+                                        เวลาทำงาน
+                                        <div className={styles.row}>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>เวลาเริ่ม</label>
+                                                <input type="time" value={this.state.txtworktimeleave_sfristtime} onChange={(e) => this.setState({ txtworktimeleave_sfristtime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>สิ้นสุด</label>
+                                                <input type="time" required={this.state.txtworktimeleave_sfristtime ? true : false} min={this.state.txtworktimeleave_sfristtime} value={this.state.txtworktimeleave_elasttime} onChange={(e) => this.setState({ txtworktimeleave_elasttime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>โครงการ*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_project} onChange={(e) => this.setState({ txtworktimeleave_project: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>แผนก*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_department} onChange={(e) => this.setState({ txtworktimeleave_department: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>กิจกรรม*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_activity} onChange={(e) => this.setState({ txtworktimeleave_activity: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>หมายเหตุ</label>
+                                        <input type="text" className="form-control"  value={this.state.txtworktimeleave_comment} onChange={(e) => this.setState({ txtworktimeleave_comment: e.target.value })}/>
+                                    </div>
+                                </div>
+                            </div>
+                        </Modal.Body>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: '0.75rem', borderTop: '1px solid #dee2e6', borderBottomRightRadius: 'calc(0.3rem - 1px)', borderBottomLeftRadius: 'calc(0.3rem - 1px)' }}>
+                            <div className={styles.row} style={{ width: '100%' }}>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                                <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
+                                    <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                </div>
+                                <div className="col-sm-12 col-md-4 col-lg-4">
+                                    <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupType2(false)}>ยกเลิก</button>
+                                </div>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                            </div>
+                        </div>
+                    </form>
+                </Modal>
+                {/* แก้ไข ลาบางช่วงเวลา */}
+                <Modal
+                    show={this.state.showpopupeditType2}
+                    backdrop="static"
+                    keyboard={false}
+                    StrictMode={true}
+                    onHide={() => this.showpopupeditType2(false, this.state.keypopupeditType2)}
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                >
+                    <Modal.Header>
+                        <div><strong>เวลาปฎิบัติงาน</strong></div>
+                    </Modal.Header>
+                    <form onSubmit={this.editWorkLeavetime} style={{ display: 'contents' }} autoComplete="on">
+                        <Modal.Body>
+                            <div className={styles.row} style={{ fontSize: 15 }}>
+                                <div className={styles.row} style={{ marginBottom: 10 }}>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>วันที่*</label>
+                                        <input type="date" className="form-control" value={this.state.txtworktimeleave_date} disabled={true} readOnly={true} onChange={(e) => this.setState({ txtworktimeleave_date: e.target.value })} />
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 9 }}>
+                                        ช่วงเวลาที่ลา
+                                        <div className={styles.row}>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>เริ่ม</label>
+                                                <input type="time" value={this.state.txtworktimeleave_fristtime} onChange={(e) => this.setState({ txtworktimeleave_fristtime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>สิ้นสุด</label>
+                                                <input type="time" required={this.state.txtworktimeleave_fristtime ? true : false} min={this.state.txtworktimeleave_fristtime} value={this.state.txtworktimeleave_lasttime} onChange={(e) => this.setState({ txtworktimeleave_lasttime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12" style={{ marginTop: 9 }}>
+                                        เวลาทำงาน
+                                        <div className={styles.row}>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>เวลาเริ่ม</label>
+                                                <input type="time" value={this.state.txtworktimeleave_sfristtime} onChange={(e) => this.setState({ txtworktimeleave_sfristtime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                            <div className="col-sm-6 col-md-6 col-lg-6" style={{ width: '50%' }}>
+                                                <label>สิ้นสุด</label>
+                                                <input type="time" required={this.state.txtworktimeleave_sfristtime ? true : false} min={this.state.txtworktimeleave_sfristtime} value={this.state.txtworktimeleave_elasttime} onChange={(e) => this.setState({ txtworktimeleave_elasttime: e.target.value })} className="form-control" style={{ width: '97%' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>โครงการ*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_project} onChange={(e) => this.setState({ txtworktimeleave_project: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>แผนก*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_department} onChange={(e) => this.setState({ txtworktimeleave_department: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>กิจกรรม*</label>
+                                        <input type="text" className="form-control" required={true} value={this.state.txtworktimeleave_activity} onChange={(e) => this.setState({ txtworktimeleave_activity: e.target.value })}/>
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                        <label>หมายเหตุ</label>
+                                        <input type="text" className="form-control"  value={this.state.txtworktimeleave_comment} onChange={(e) => this.setState({ txtworktimeleave_comment: e.target.value })}/>
+                                    </div>
+                                </div>
+                            </div>
+                        </Modal.Body>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: '0.75rem', borderTop: '1px solid #dee2e6', borderBottomRightRadius: 'calc(0.3rem - 1px)', borderBottomLeftRadius: 'calc(0.3rem - 1px)' }}>
+                            <div className={styles.row} style={{ width: '100%' }}>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                                <div className="col-sm-12 col-md-4 col-lg-4" style={{ marginBottom: 10 }}>
+                                    <button type="submit" variant="primary" className="btn btn-danger" style={{ width: '100%' }}>ตกลง</button>
+                                </div>
+                                <div className="col-sm-12 col-md-4 col-lg-4">
+                                    <button type="button" variant="primary" className="btn btn-light" style={{ width: '100%' }} onClick={() => this.showpopupeditType2(false, this.state.keypopupeditType2)}>ยกเลิก</button>
+                                </div>
+                                <div className="col-sm-12 col-md-2 col-lg-2"></div>
+                            </div>
+                        </div>
+                    </form>
+                </Modal>
+
+                {/* ประเภท */}
+                <Modal
+                    show={this.state.showpopupselecttype}
+                    backdrop="static"
+                    keyboard={false}
+                    StrictMode={true}
+                    onHide={() => this.showpopupselecttype(false)}
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                >
+                    <Modal.Header closeButton>
+                        <div><strong>เลือกประเภท</strong></div>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className={styles.row} style={{ fontSize: 15 }}>
+                            <div className={styles.row} style={{ marginBottom: 10 }}>
+                                <div className="col-sm-12 col-md-12 col-lg-12">
+                                    <button type="button" className="btn btn-outline-dark" style={{ width: '100%' }} onClick={() => this.setTypetimesheet('1')}>มาทำงานทั้งวัน</button>
+                                </div>
+                                <div className="col-sm-12 col-md-12 col-lg-12" style={{ marginTop: 10 }}>
+                                    <button type="button" className="btn btn-outline-dark" style={{ width: '100%' }} onClick={() => this.setTypetimesheet('2')}>ลาป่วยบางช่วงเวลา</button>
+                                </div>
+                                <div className="col-sm-12 col-md-12 col-lg-12" style={{ marginTop: 10 }}>
+                                    <button type="button" className="btn btn-outline-dark" style={{ width: '100%' }} onClick={() => this.setTypetimesheet('3')}>ลาทั้งวัน</button>
+                                </div>
+                            </div>
+                        </div>
+                    </Modal.Body>
+                </Modal>
+
+
+                {/* Header */}
+                <div className="container" style={{ backgroundColor: '#8e1e23', paddingBottom: 31 }}>
+                    {/* Menu Tabs */}
+                    <div style={{ textAlign: 'center', fontSize: 20, marginBottom: 15, color: 'white', paddingTop: 20, display: 'flex', flex: 1, flexDirection: 'row' }}>
+                        <div style={{ width: '50%', textAlign: 'left', fontSize: 20, marginTop: -5 }}>
+                            <div style={{ fontSize: 20 }}>TIMESHEET</div>
+                            <div>สำหรับรายเดือน</div>
+                        </div>
+                        <div style={{ width: '50%', textAlign: 'right' }}>
+                            <span onClick={() => this.logOut()}>{this.state.EmployeeCode} {this.state.EmployeeDisplayName}</span>
+                            <div>{this.state.typemenu === '1' ? 'ประเภทมาทำงานทั้งวัน' : this.state.typemenu === '2' ? 'ประเภทลาบางช่วงเวลา' : this.state.typemenu === '3' ? 'ประเภทลาทั้งวัน' : 'กรุณาเลือกประเภท'}</div>
                         </div>
                     </div>
+                    {
+                        this.state.tabindex === '1' ?
+                            <div onClick={() => this.setState({ tabindex: '1' })} style={{ backgroundColor: 'white', height: 45, width: '50%', position: 'absolute', marginTop: -4, borderRadius: 11, textAlign: 'center', paddingTop: 5, marginLeft: 0, fontWeight: 'bold' }}>ลงเวลาปฎิบัติงาน</div>
+                            :
+                            <div onClick={() => this.setState({ tabindex: '1' })} style={{ height: 45, width: '50%', position: 'absolute', marginTop: -4, borderRadius: 11, textAlign: 'center', paddingTop: 5, marginLeft: 0, color: 'white', fontWeight: 'bold' }}>ลงเวลาปฎิบัติงาน</div>
 
-                    <Container fluid={true}>
-
-                        {/* Menu Tabs */}
-                        <Nav tabs >
-                            <NavItem >
-                                <input type="radio" name="slideItem" id="slide-item-1" className="slide-toggle" defaultChecked={this.state.tabindex === '1' ? true : false} />
-                                <NavLink className={this.state.tabindex === '1' ? 'active' : ''} onClick={() => this.setState({ tabindex: '1' })}><i className="fa fa-calendar-alt"></i>TIMESHEET</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <input type="radio" name="slideItem" id="slide-item-2" className="slide-toggle" defaultChecked={this.state.tabindex === '2' ? true : false} />
-                                <NavLink className={this.state.tabindex === '2' ? 'active' : ''} onClick={() => this.setState({ tabindex: '2' })}><i className="fa fa-clipboard"></i>ผลงาน</NavLink>
-                            </NavItem>
-                        </Nav>
-
-                        {
-                            this.state.tabindex === '1' ?
-                                <>
-
-                                    <Row>
-                                        <Col sm="12" xl="12">
-                                            <Row>
-                                                <Col sm="12">
-                                                    <Card>
-                                                        <CardHeader>
-                                                            <h5>รหัสพนักงาน : {this.state.EmployeeCode}</h5>
-                                                            <h5>ชื่อ - สกุล : <Label> {this.state.EmployeeDisplayName}</Label></h5>
-                                                        </CardHeader>
-                                                        <CardBody className="e-form">
-                                                            <Form className="theme-form">
-                                                                <FormGroup>
-                                                                    <Label className="col-form-label pt-0 pb-0" >วันที่ <span className="text-danger">*</span></Label>
-                                                                    <Input className="form-control" type="date" min={this.state.min_date} max={this.state.max_date} value={this.state.txt_date} onChange={(e) => this.setState({ txt_date: e.target.value })} />
-                                                                </FormGroup>
-                                                                <FormGroup>
-                                                                    <Label className="col-form-label pt-0 pb-0" >โครงการ <span className="text-danger">*</span></Label>
-                                                                    <Select
-                                                                        options={this.state.optionprojectname}
-                                                                        value={this.state.txt_projectnamevalue}
-                                                                        onChange={(e) => this.changeProjectname(e)}
-                                                                        styles={stylesselect}
-                                                                    />
-                                                                </FormGroup>
-                                                                <FormGroup>
-                                                                    <Label className="col-form-label pt-0 pb-0" >ช่วง <span className="text-danger">*</span></Label>
-                                                                    <Select
-                                                                        options={this.state.optionzone}
-                                                                        value={this.state.txt_zonevalue}
-                                                                        onChange={(e) => this.changeZone(e)}
-                                                                        styles={stylesselect}
-                                                                    />
-                                                                </FormGroup>
-                                                                <FormGroup>
-                                                                    <Label className="col-form-label pt-0 pb-0" >กิจกรรม <span className="text-danger">*</span></Label>
-                                                                    <Select
-                                                                        options={this.state.optionactivity}
-                                                                        value={this.state.txt_activityvalue}
-                                                                        onChange={(e) => this.changeActivity(e)}
-                                                                        styles={stylesselect}
-                                                                    />
-                                                                </FormGroup>
-                                                                <FormGroup>
-                                                                    <Label className="col-form-label pt-0 pb-0" >พื้นที่งาน <span className="text-danger">*</span></Label>
-                                                                    <Select
-                                                                        options={this.state.optionlocation}
-                                                                        value={this.state.txt_locationvalue}
-                                                                        onChange={(e) => this.changeLocation(e)}
-                                                                        styles={stylesselect}
-                                                                    />
-                                                                </FormGroup>
-                                                                <FormGroup className="mt-3">
-                                                                    <h6 >ข้อมูลพนักงานรายวัน <span className="text-danger">*</span></h6>
-
-                                                                    {
-                                                                        this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
-                                                                            this.state.item_employee ?
-                                                                                <>
-                                                                                    {
-                                                                                        this.state.checkitemall ?
-                                                                                            <div onClick={() => this.applyAll()}>
-                                                                                                <i className={'squareboxcheck fa-solid fa-square-check'}></i> ใช้เวลาด้วยกันทั้งหมด
-                                                                                            </div>
-                                                                                            :
-                                                                                            <div onClick={() => this.applyAll()}>
-                                                                                                <i className={'squareboxuncheck fa-solid fa-square'}></i> ใช้เวลาด้วยกันทั้งหมด
-                                                                                            </div>
-                                                                                    }
-                                                                                </>
-                                                                                : <></>
-                                                                            : <></>
-                                                                    }
-                                                                    <div className="table-responsive">
-                                                                        <Table bordered>
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th scope="col" style={{ fontSize: 12 }}>รหัส</th>
-                                                                                    <th scope="col" style={{ fontSize: 12 }}>ชื่อสกุล</th>
-                                                                                    <th scope="col" style={{ fontSize: 12 }}></th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-
-                                                                                {/* // */}
-                                                                                {
-                                                                                    this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
-                                                                                        this.state.item_employee ?
-                                                                                            this.state.item_employee.map((item, index) => {
-                                                                                                return (
-                                                                                                    <>
-                                                                                                        <tr key={index} style={{ borderBottomStyle: 'hidden' }}>
-                                                                                                            <td style={{ fontSize: 12 }}><p>{item.empcode}</p></td>
-                                                                                                            <td >
-                                                                                                                <a onClick={() => this.showpopupinput(true, index, item.empcode, item.empname)}>{item.empname}</a>
-                                                                                                                <div className={styles.row} style={{fontSize: 9}}>
-                                                                                                                    <div className="col-lg-12 col-md-12 col-sm-12">
-                                                                                                                        <div><p style={{fontSize: 9 }}>โอที(ก่อน) {item.befotstart}-{item.befotend}</p></div>
-                                                                                                                        <div><p style={{fontSize: 9 }}>ช่วงแรก {item.befstart}-{item.befend}</p></div>
-                                                                                                                        <div><p style={{fontSize: 9 }}>ช่วงหลัง {item.atfstart}-{item.atfend}</p></div>
-                                                                                                                        <div><p style={{fontSize: 9 }}>โอที(หลัง) {item.otstart}-{item.otend}</p></div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </td>
-                                                                                                            <td style={{ textAlign: 'center' }}>
-                                                                                                                <i className="fa-solid fa-trash" style={{ fontSize: 14, color: 'red', cursor: 'pointer' }} onClick={() => this.removeEmployee(index)}></i>
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                    </>
-                                                                                                )
-                                                                                            })
-                                                                                            :
-                                                                                            <tr>
-                                                                                                <td colSpan={7} style={{ textAlign: 'center' }}>ไม่พบรายชื่อ</td>
-                                                                                            </tr>
-                                                                                        : <></>
-                                                                                }
-                                                                                {/* // */}
-                                                                                <tr>
-                                                                                    <td colSpan="3" align="center" >
-                                                                                        {
-                                                                                            this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
-                                                                                                <Button className="btn-pill btn-air-primary" outline color="primary" size="sm" onClick={() => this.showpopupcreateemployee(true)}><i className="fa fa-plus"></i> เพิ่มพนักงานรายวัน </Button> : <><Label >ไม่พบรายชื่อ</Label></>
-                                                                                        }
-
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </Table>
-                                                                    </div>
-                                                                </FormGroup>
-
-                                                            </Form>
-                                                        </CardBody>
-                                                        <CardFooter align="right">
-                                                            <Button color="danger" className="col-sm-12" onClick={() => this.setState({ tabindex: '2' })} >ถัดไป</Button>
-                                                        </CardFooter>
-                                                    </Card>
-
-                                                </Col>
-                                            </Row>
-                                        </Col>
-                                    </Row>
-                                </>
-                                :
-                                this.state.tabindex === '2' ?
-                                    <>
-                                        <Row>
-                                            <Col sm="12" xl="12">
-                                                <Row>
-                                                    <Col sm="12">
-                                                        <Card>
-                                                            <CardBody className="e-form">
-                                                                <Form className="theme-form">
-                                                                    <FormGroup>
-                                                                        <Label className="col-form-label pt-0 pb-0" >เป้าหมาย <span className="text-danger">*</span></Label>
-                                                                        <Input className="form-control" type="text" value={this.state.jobtargetvalue + ' ' + this.state.jobtargetlabel} disabled={true} />
-                                                                    </FormGroup>
-                                                                    <FormGroup>
-                                                                        <Label className="col-form-label pt-0 pb-0" >ทำได้จริง <span className="text-danger">*</span></Label><br></br>
-                                                                        <Input className="form-control d-inline " type="text" value={this.state.txt_actual} onChange={(e) => this.setState({ txt_actual: e.target.value.replace(/[^0-9]/g, '') })} style={{ width: '60%' }} /> <Label className="ml-2">{this.state.jobtargetlabel}</Label>
-                                                                    </FormGroup>
-                                                                    <FormGroup className="mt-3">
-                                                                        <h6  >รายละเอียดงาน/อื่นๆ </h6>
-                                                                        <div className="table-responsive">
-                                                                            <Table bordered style={{ fontSize: 11 }}>
-                                                                                <thead>
-                                                                                    <tr>
-                                                                                        <th style={{ fontSize: 12 }}>ลำดับ</th>
-                                                                                        <th style={{ fontSize: 12 }}>รายละเอียด</th>
-                                                                                        <th style={{ fontSize: 12 }}>ปริมาณ</th>
-                                                                                        <th style={{ fontSize: 12 }}>หน่วย</th>
-                                                                                        <th style={{ fontSize: 12 }}></th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-
-                                                                                    {/* // */}
-                                                                                    {
-                                                                                        this.state.itemprogress ?
-                                                                                            this.state.itemprogress.map((item, index) => {
-                                                                                                return (
-                                                                                                    <tr style={{ borderBottomStyle: 'hidden' }} key={index}>
-                                                                                                        <td style={{ fontSize: 12, textAlign: 'center' }}>{rowitemprogress++}</td>
-                                                                                                        <td style={{ fontSize: 12 }} onClick={() => this.showpopupeditprogress(true, index)}>{item.detail}</td>
-                                                                                                        <td style={{ fontSize: 12 }}>{item.volumn}</td>
-                                                                                                        <td style={{ fontSize: 12 }}>{item.unit}</td>
-                                                                                                        <td style={{ textAlign: 'center' }}>
-                                                                                                            <i className="fa-solid fa-trash" style={{ fontSize: 14, color: 'red', cursor: 'pointer' }} onClick={() => this.removeProgress(index)}></i>
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                )
-                                                                                            })
-                                                                                            :
-                                                                                            <tr>
-                                                                                                <td colSpan={6}>-</td>
-                                                                                            </tr>
-                                                                                    }
-                                                                                    {/* // */}
-
-                                                                                    <tr>
-                                                                                        <td colSpan="4" align="center" >
-                                                                                            {
-                                                                                                this.state.txt_projectnamevalue.value && this.state.txt_zonevalue.value && this.state.txt_activityvalue.value && this.state.txt_locationvalue.value ?
-                                                                                                    <Button className="btn-pill btn-air-primary" outline color="primary" size="sm" onClick={() => this.showpopupprogress(true)} ><i className="fa fa-plus"></i> เพิ่มรายละเอียด </Button> : <><Label >ไม่พบข้อมูล</Label></>
-                                                                                            }
-
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </Table>
-                                                                        </div>
-                                                                    </FormGroup>
-
-                                                                </Form>
-                                                            </CardBody>
-                                                            <CardFooter align="right">
-                                                                {
-                                                                    this.state.EmployeeCode && this.state.txt_date && this.state.txt_projectnamevalue.value &&
-                                                                        this.state.txt_zonevalue.value && this.state.txt_projectnamevalue.activity && this.state.JobCode &&
-                                                                        this.state.txt_activityvalue.code && this.state.CostCenterCode && this.state.jobtargetvalue && this.state.jobtargetlabel &&
-                                                                        this.state.txt_actual && this.state.jobtargetlabel && this.state.item_employee ?
-                                                                        checkitememp[0] ?
-                                                                            <Button color="light" className="col-sm-12" disabled={true}>ส่งข้อมูล (กรอกเวลาให้ครบ)</Button>
-                                                                            :
-                                                                            <Button color="danger" className="col-sm-12" onClick={() => this.btn_confrim()} >ส่งข้อมูล</Button>
-                                                                        :
-                                                                        <Button color="danger" className="col-sm-12" disabled={true}>ส่งข้อมูล (กรอกข้อมูลให้ครบ)</Button>
-                                                                }
-
-
-                                                            </CardFooter>
-                                                        </Card>
-
-                                                    </Col>
-                                                </Row>
-                                            </Col>
-                                        </Row>
-
-                                    </>
-                                    :
-                                    <></>
-                        }
-                    </Container>
+                    }
+                    {
+                        this.state.tabindex === '2' ?
+                            <div onClick={() => this.setState({ tabindex: '2' })} style={{ backgroundColor: 'white', height: 45, width: '50%', position: 'absolute', marginTop: -4, borderRadius: 11, textAlign: 'center', paddingTop: 5, marginLeft: '44.5%', fontWeight: 'bold' }}>ประวัติรายการ</div>
+                            :
+                            <div onClick={() => this.setState({ tabindex: '2' })} style={{ height: 45, width: '50%', position: 'absolute', marginTop: -4, borderRadius: 11, textAlign: 'center', paddingTop: 5, marginLeft: '44.5%', color: 'white', fontWeight: 'bold' }}>ประวัติรายการ</div>
+                    }
                 </div>
+                {
+                    this.state.tabindex === '1' ?
+                        <div className="container" style={{ marginTop: 20 }}>
+                            <div className={styles.row}>
+                                {
+                                    this.state.typemenu === '1' ? // ทำงานปกติ
+                                        <>
+                                            <div className="col-sm-12 col-md-12 col-lg-12" style={{ marginTop: 0 }}>
+                                                <div style={{ display: 'flex', flex: 1, flexDirection: 'row', width: '100%' }}>
+                                                    <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                        <button onClick={() => this.showpopupselecttype(true)} style={{width: '95%', backgroundColor: '#8c1e21', color: 'white'}} type="button" className="btn"><i className="fa-solid fa-arrow-rotate-right"></i> เปลี่ยน</button>
+                                                    </div>
+                                                    <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                        {
+                                                            this.state.txtworktime_status !== '2' && this.state.txtworktime_item && this.state.txtworktimeleave_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                            <button type="button" style={{width: '95%', backgroundColor: '#8c1e21', color: 'white'}} className="btn" onClick={() => this.saveType1()}><i className="fa-solid fa-floppy-disk"></i> SAVE</button>
+                                                            :
+                                                            <button type="button" style={{width: '95%', backgroundColor: '#8c1e21', color: 'white', opacity: 0.2 }} disabled={true} className="btn"><i className="fa-solid fa-floppy-disk"></i> SAVE</button>
+                                                        }
+                                                    </div>
+                                                    <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                        {
+                                                            this.state.txtworktime_status === '1' && this.state.txtworktime_item && this.state.txtworktimeleave_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                            <button type="button" style={{width: '95%', backgroundColor: 'blue', color: 'white'}} className="btn" onClick={() => this.submitType1()}><i className="fa-solid fa-paper-plane"></i> SEND</button>
+                                                            :
+                                                            <button type="button" style={{width: '95%', backgroundColor: 'blue', color: 'white', opacity: 0.2 }} disabled={true} className="btn" ><i className="fa-solid fa-paper-plane"></i> SEND</button>
+                                                        }
+                                                    </div>
+                                                    <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                        {
+                                                            this.state.txtworktime_status !== '2' && this.state.txtworktimeleave_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                                <button type="button" style={{ width: '95%', backgroundColor: '#8c1e21', color: 'white' }} className="btn" onClick={() => this.showpopupType1(true)}><i className="fa-solid fa-calendar-plus"></i> เพิ่ม</button>
+                                                                :
+                                                                <button type="button" style={{ width: '95%', backgroundColor: '#8c1e21', color: 'white', opacity: 0.2 }} disabled={true} className="btn"><i className="fa-solid fa-calendar-plus"></i> เพิ่ม</button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-12 col-md-12 col-lg-12" style={{ marginTop: 10 }}>
+                                                <table className="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>เริ่ม</th>
+                                                            <th>สิ้นสุด</th>
+                                                            <th>รายละเอียด</th>
+                                                            <th>แก้ไข</th>
+                                                            <th>ลบ</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+                                                            this.state.txtworktime_item ?
+                                                                this.state.txtworktime_item.map((item, index) => {
+                                                                    return (
+                                                                        <tr key={index}>
+                                                                            <td>{item.worktime_fristtime}</td>
+                                                                            <td>{item.worktime_lasttime}</td>
+                                                                            <td>
+                                                                                <div style={{ fontSize: 11 }}>โครงการ : {item.worktime_projectvalue}</div>
+                                                                                <div style={{ fontSize: 11 }}>แผนก : {item.worktime_departmentvalue}</div>
+                                                                                <div style={{ fontSize: 11 }}>กิจกรรม : {item.worktime_activityvalue}</div>
+                                                                                <div style={{ fontSize: 11 }}>หมายเหตุ : {item.worktime_comment}</div>
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    this.state.txtworktime_status !== '2' && this.state.txtworktimeleave_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                                                    <button onClick={() => this.showpopupeditType1(true, index)} type="button" className="btn" style={{ backgroundColor: '#bd2027', color: 'white' }}><i className="fa-solid fa-pen-to-square"></i></button>
+                                                                                    :
+                                                                                    <></>
+                                                                                }
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    this.state.txtworktime_status !== '2' && this.state.txtworktimeleave_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                                                        <button onClick={() => this.removeType1(index)} type="button" className="btn" style={{ backgroundColor: '#bd2027', color: 'white' }}><i className="fa-solid fa-trash"></i></button>
+                                                                                        :
+                                                                                        <></>
+                                                                                }
+                                                                            </td>
+                                                                        </tr>
+                                                                    )
+                                                                }) :
+                                                                <tr><td colSpan={5}>-</td></tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </>
+                                        :
+                                        <></>
+                                }
+                                {
+                                    this.state.typemenu === '2' ? // ลาบางช่วงเวลา
+                                        <>
+                                            <div className="col-sm-12 col-md-12 col-lg-12" style={{ marginTop: 0 }}>
+                                                <div style={{ display: 'flex', flex: 1, flexDirection: 'row', width: '100%' }}>
+                                                    <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                        <button onClick={() => this.showpopupselecttype(true)} style={{width: '95%', backgroundColor: '#8c1e21', color: 'white'}} type="button" className="btn"><i className="fa-solid fa-arrow-rotate-right"></i> เปลี่ยน</button>
+                                                    </div>
+                                                    <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                        {
+                                                            this.state.txtworktimeleave_status !== '2' && this.state.txtworktimeleave_item  && this.state.txtworktime_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                            <button type="button" style={{width: '95%', backgroundColor: '#8c1e21', color: 'white'}} className="btn" onClick={() => this.saveType2()}><i className="fa-solid fa-floppy-disk"></i> SAVE</button>
+                                                            :
+                                                            <button type="button" style={{width: '95%', backgroundColor: '#8c1e21', color: 'white', opacity: 0.2 }} disabled={true} className="btn"><i className="fa-solid fa-floppy-disk"></i> SAVE</button>
+                                                        }
+                                                    </div>
+                                                    <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                        {
+                                                            this.state.txtworktimeleave_status === '1' && this.state.txtworktimeleave_item && this.state.txtworktime_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                            <button type="button" style={{width: '95%', backgroundColor: 'blue', color: 'white'}} className="btn" onClick={() => this.submitType2()}><i className="fa-solid fa-paper-plane"></i> SEND</button>
+                                                            :
+                                                            <button type="button" style={{width: '95%', backgroundColor: 'blue', color: 'white', opacity: 0.2 }} disabled={true} className="btn" ><i className="fa-solid fa-paper-plane"></i> SEND</button>
+                                                        }
+                                                    </div>
+                                                    <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                        {
+                                                            this.state.txtworktimeleave_status !== '2'&& this.state.txtworktime_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                                <button type="button" style={{ width: '95%', backgroundColor: '#8c1e21', color: 'white' }} className="btn" onClick={() => this.showpopupType2(true)}><i className="fa-solid fa-calendar-plus"></i> เพิ่ม</button>
+                                                                :
+                                                                <button type="button" style={{ width: '95%', backgroundColor: '#8c1e21', color: 'white', opacity: 0.2 }} disabled={true} className="btn"><i className="fa-solid fa-calendar-plus"></i> เพิ่ม</button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-12 col-md-12 col-lg-12" style={{ marginTop: 10 }}>
+                                                <table className="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>เริ่ม</th>
+                                                            <th>สิ้นสุด</th>
+                                                            <th>รายละเอียด</th>
+                                                            <th>แก้ไข</th>
+                                                            <th>ลบ</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {
+                                                            this.state.txtworktimeleave_item ?
+                                                                this.state.txtworktimeleave_item.map((item, index) => {
+                                                                    return (
+                                                                        <tr key={index}>
+                                                                            <td>
+                                                                                <div style={{fontSize: 13}}>{item.worktimeleave_fristtime ? 'ลา '+item.worktimeleave_fristtime : ''}</div>
+                                                                                <div style={{fontSize: 13}}>{item.worktimeleave_sfristtime ? 'ทำงาน '+item.worktimeleave_sfristtime : ''}</div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div>{item.worktimeleave_lasttime}</div>
+                                                                                <div>{item.worktimeleave_elasttime}</div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div style={{ fontSize: 11 }}>โครงการ : {item.worktimeleave_project}</div>
+                                                                                <div style={{ fontSize: 11 }}>แผนก : {item.worktimeleave_department}</div>
+                                                                                <div style={{ fontSize: 11 }}>กิจกรรม : {item.worktimeleave_activity}</div>
+                                                                                <div style={{ fontSize: 11 }}>หมายเหตุ : {item.worktimeleave_comment}</div>
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    this.state.txtworktimeleave_status !== '2' && this.state.txtworktime_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                                                    <button onClick={() => this.showpopupeditType2(true, index)} type="button" className="btn" style={{ backgroundColor: '#bd2027', color: 'white' }}><i className="fa-solid fa-pen-to-square"></i></button>
+                                                                                    :
+                                                                                    <></>
+                                                                                }
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    this.state.txtworktimeleave_status !== '2' && this.state.txtworktime_status !== '2' && this.state.txtsickallday_item.leave_typesave !=='2' ?
+                                                                                        <button onClick={() => this.removeType2(index)} type="button" className="btn" style={{ backgroundColor: '#bd2027', color: 'white' }}><i className="fa-solid fa-trash"></i></button>
+                                                                                        :
+                                                                                        <></>
+                                                                                }
+                                                                            </td>
+                                                                        </tr>
+                                                                    )
+                                                                }) :
+                                                                <tr><td colSpan={5}>-</td></tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </>
+                                        :
+                                        <></>
+                                }
+                                {
+                                    this.state.typemenu === '3' ? // ลาทั้งวัน
+                                        <div className="col-sm-12 col-md-12 col-lg-12" style={{ marginTop: 0 }}>
+                                            <div style={{ display: 'flex', flex: 1, flexDirection: 'row', width: '100%' }}>
+                                                <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                    <span>
+                                                        <button onClick={() => this.showpopupselecttype(true)} type="button" className="btn" style={{ width: '95%', backgroundColor: '#8c1e21', color: 'white' }}><i className="fa-solid fa-arrow-rotate-right"></i> เปลี่ยน</button>
+                                                    </span>
+                                                </div>
+                                                <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                    {
+                                                        this.state.txtsickallday_item.leave_typesave !== '2' && this.state.txtworktime_status !== '2' && this.state.txtworktimeleave_status !== '2' ?
+                                                            <span>
+                                                                <button onClick={() => this.saveSickleave()} type="button" className="btn" style={{ width: '95%', backgroundColor: '#8c1e21', color: 'white' }}><i className="fa-solid fa-floppy-disk"></i> SAVE</button>
+                                                            </span>
+                                                            :
+                                                            <span>
+                                                                <button type="button" className="btn" style={{ width: '95%', backgroundColor: '#8c1e21', color: 'white', opacity: 0.2 }} disabled={true}><i className="fa-solid fa-floppy-disk"></i> SAVE</button>
+                                                            </span>
+                                                    }
+                                                </div>
+                                                <div style={{ width: '33.333333333333333%', textAlign: 'right' }}>
+                                                    {
+                                                        this.state.txtsickallday_item.leave_typesave !== '2' && this.state.txtworktime_status !== '2' && this.state.txtworktimeleave_status !== '2' ?
+                                                            <span>
+                                                                <button onClick={() => this.submitSickleave()} type="button" className="btn " style={{ width: '95%', backgroundColor: 'blue', color: 'white' }}><i className="fa-solid fa-floppy-disk"></i> SUBMIT</button>
+                                                            </span>
+                                                            :
+                                                            <span>
+                                                                <button type="button" className="btn " style={{ width: '95%', backgroundColor: 'blue', color: 'white', opacity: 0.2}} disabled={true}><i className="fa-solid fa-floppy-disk"></i> SUBMIT</button>
+                                                            </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div className={styles.row}>
+                                                <div className="col-sm-12 col-md-12 col-lg-12" style={{ marginTop: 10 }}>
+                                                    <table className="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style={{textAlign: 'left'}}>เริ่ม</th>
+                                                                <th style={{textAlign: 'left'}}>สิ้นสุด</th>
+                                                                <th style={{textAlign: 'center'}}>จำนวนชั่วโมง</th>
+                                                                <th style={{textAlign: 'left'}}>สถานะ</th>
+                                                                <th style={{textAlign: 'center'}}>แก้ไข</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {
+                                                                this.state.txtsickallday_item ?
+                                                                    <tr>
+                                                                        <td>{this.state.txtsickallday_item.leave_fristtime}</td>
+                                                                        <td>{this.state.txtsickallday_item.leave_lasttime}</td>
+                                                                        <td style={{textAlign: 'center'}}>
+                                                                            <div style={{ fontSize: 11 }}>{sumtime}</div>
+                                                                        </td>
+                                                                        <td style={{textAlign: 'left'}}>
+                                                                            <div style={{ fontSize: 11 }}>
+                                                                                {
+                                                                                    this.state.txtsickallday_item.leave_typesave === '1' ? 'บันทึกแล้ว' : this.state.txtsickallday_item.leave_typesave === '2' ? 'ส่งข้อมูลแล้ว' : ''
+                                                                                }
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style={{textAlign: 'center'}}>
+                                                                            {
+                                                                                this.state.txtsickallday_item.leave_typesave !== '2' && this.state.txtworktime_status !== '2' && this.state.txtworktimeleave_status !== '2' ?
+                                                                                <button type="button" onClick={() => this.showpopupType3(true, this.state.txtsickallday_item.leave_id)} className="btn" style={{ backgroundColor: '#bd2027', color: 'white' }}><i className="fa-solid fa-pen-to-square"></i></button>
+                                                                                :
+                                                                                <></>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                    : <></>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        :
+                                        <></>
+                                }
+                            </div>
+                        </div>
+                        :
+                        <div className="container" style={{ marginTop: 20 }}>
+                            <div className={styles.row}>
+                                <div className="col-sm-12 col-md-12 col-lg-12">รายการส่งข้อมูล</div>
+
+                            </div>
+                        </div>
+                }
+
+
+
                 <br /><br /><br />
             </>
         );
